@@ -1,4 +1,4 @@
-name: Azure-data-migration
+name: Azure-data-migrationsS
 
 on:
   push:
