@@ -44,6 +44,10 @@ var sourceDatabase = 'raisqadb'
 var sinkServer = sinkSqlServer
 var sinkDatabase = 'futuraqa'
 
+// Define table type
+var sinkTableType = 'dbo.CustomTableType' // Replace with your actual table type
+
+// Define table type parameter name
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: dataFactoryName
@@ -56,7 +60,6 @@ resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkeds
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      // Use variables for sourceServer and sourceDatabase
       connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
@@ -69,7 +72,6 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      // Use variables for sinkServer and sinkDatabase
       connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
@@ -81,10 +83,7 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
   name: sourceDatasetName
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSource.name
-      type: 'LinkedServiceReference'
-    }
+    linkedServiceName: dataFactoryLinkedServiceSource
     typeProperties: {
       tableName: sourceTableName
     }
@@ -98,10 +97,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
 
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSink.name
-      type: 'LinkedServiceReference'
-    }
+    linkedServiceName: dataFactoryLinkedServiceSink
     typeProperties: {
       tableName: 'rig' // Adjust to the desired sink table name
     }
@@ -126,6 +122,10 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
             type: 'SqlSink'
             writeBatchSize: 10000
             writeBatchTimeout: '60.00:00:00'
+            storedProcedureParameters: {
+              YourParameterName: 'SampleValue' // Replace with actual parameter value if needed
+              sinkTableTypeParameterName: sinkTableType
+            }
             sqlWriterStoredProcedureName: 'CreateTableAndCopyData' // Specify the stored procedure name
           }
         }
