@@ -1,6 +1,6 @@
 // Define parameters for the script
 @description('Name of the source table in the SQL Server.')
-param sourceTableName string = 'rig'
+param sourceTableName string = '[dbo].[rig]'
 
 @description('Name of the pipeline for data copy activity.')
 param pipelineName string = 'db_devpipeline'
@@ -99,7 +99,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
     type: 'AzureSqlTable'
     linkedServiceName: dataFactoryLinkedServiceSink
     typeProperties: {
-      tableName: 'rig' // Adjust to the desired sink table name
+      tableName: '[dbo].[rig]' // Adjust to the desired sink table name
     }
   }
 }
