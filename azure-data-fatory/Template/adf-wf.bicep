@@ -3,7 +3,7 @@
 param sourceTableName string = 'rig'
 
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'db_devpipeline'
+param pipelineName string = 'db_devpipelinee'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -30,12 +30,11 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais-linksever'
-var linkedServiceSinkName = 'ds_futura-linkserver'
-var sourceDatasetName = 'ds_raisdataset'
-var sinkDatasetName = 'ds_futuradataset'
+var linkedServiceSourceName = 'ds_rais-linkseverr'
+var linkedServiceSinkName = 'ds_futura-linkserverr'
+var sourceDatasetName = 'ds_raisdatasett'
+var sinkDatasetName = 'ds_futuradatasett'
 var dataFactoryName = 'myappadf'
-
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
@@ -43,7 +42,7 @@ var sourceDatabase = 'raisqadb'
 
 // Define variables for sink server and database
 var sinkServer = sinkSqlServer
-var sinkDatabase = 'futuraqa '
+var sinkDatabase = 'futuraqa'
 
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
@@ -58,7 +57,7 @@ resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkeds
     type: 'AzureSqlDatabase'
     typeProperties: {
       // Use variables for sourceServer and sourceDatabase
-      connectionString: 'Server name=${sourceServer};Database name=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
+      connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
 }
@@ -71,7 +70,7 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
     type: 'AzureSqlDatabase'
     typeProperties: {
       // Use variables for sinkServer and sinkDatabase
-      connectionString: 'Server name=${sinkServer};Database name=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
+      connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
 }
@@ -145,4 +144,3 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
     ]
   }
 }
-
