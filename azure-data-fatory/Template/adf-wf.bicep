@@ -26,10 +26,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variables for clarity
-var linkedServiceSourceName = 'ds_source-linkserver'
-var linkedServiceSinkName = 'ds_sink-linkserver'
-var sourceDatasetName = 'ds_source-dataset'
-var sinkDatasetName = 'ds_sink-dataset'
+var linkedServiceSourceName = 'ds_source'
+var linkedServiceSinkName = 'ds_sink'
+var sourceDatasetName = 'ds_source_dataset'
+var sinkDatasetName = 'ds_sink_dataset'
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
