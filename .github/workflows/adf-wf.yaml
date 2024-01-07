@@ -1,48 +1,35 @@
-name: Adf-deployment
+name: Azure-data-migrationsS
 
 on:
-  workflow_dispatch:
-
-permissions:  
-  id-token: write
-  contents: read
+   push:
+permissions:
+    id-token: write
+    contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: dev
     steps:
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./  # Checkout to the root directory
 
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        path: ./  # Checkout to the root directory
-
-    - name: Build ARM Template
-      run: |
-        # Add commands to build your ARM template here
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        path: ./  # Checkout to the root directory
-
-    - name: Deploy ARM Template
-      uses: azure/arm-deploy@v1
-      with:
-        scope: resourcegroup
-        region: East US
-        resourceGroupName: ${{ secrets.RESOURCE_GROUP}}
-        template: Datafactory/template/adf-sql-wf.bicep
+      # Log into Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+       
+      # Deploy ARM template
+      - name: Deploy ARM Template
+        uses: azure/arm-deploy@v1
+        with:
+          scope: resourcegroup
+          region: East US
+          resourceGroupName: ${{secrets.RESOURCE_GROUP}}
+          template: azure-data-fatory/Template/adf-copy.bicep
+          parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQL_SOURCEUSERID}} sqlsourcePassword=${{secrets.SQL_SOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQL_SINKUSERID}} sqlsinkPassword=${{secrets.SQL_SINKPASSWORD}} sourceSqlServer=${{secrets.SQL_SOURCESERVER}} sinkSqlServer=${{secrets.SQL_SINKSERVER}}
+ 
