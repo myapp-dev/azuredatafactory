@@ -96,39 +96,11 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
   }
 }
 
-// Define pipeline for the data copy activity
+// Define pipeline
 resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
-  parent: dataFactory
   name: pipelineName
+  parent: dataFactory
   properties: {
-    activities: [
-      {
-        name: 'CopyData'
-        type: 'Copy'
-        typeProperties: {
-          source: {
-            type: 'SqlSource'
-            sqlReaderQuery: 'SELECT * FROM ${sourceTableName}'
-          }
-          sink: {
-            type: 'SqlSink'
-            writeBatchSize: 10000
-            writeBatchTimeout: '60.00:00:00'
-          }
-        }
-        inputs: [
-          {
-            referenceName: dataFactorySourceDataset.name
-            type: 'DatasetReference'
-          }
-        ]
-        outputs: [
-          {
-            referenceName: dataFactorySinkDataset.name
-            type: 'DatasetReference'
-          }
-        ]
-      }
-    ]
+    activities: []
   }
 }
