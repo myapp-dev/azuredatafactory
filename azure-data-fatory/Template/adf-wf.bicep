@@ -58,7 +58,7 @@ resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkeds
     type: 'AzureSqlDatabase'
     typeProperties: {
       // Use variables for sourceServer and sourceDatabase
-      connectionString: 'Server name=${sourceServer};Database name=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
+      connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
 }
@@ -71,7 +71,7 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
     type: 'AzureSqlDatabase'
     typeProperties: {
       // Use variables for sinkServer and sinkDatabase
-      connectionString: 'Server name=${sinkServer};Database name=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
+      connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
 }
