@@ -30,7 +30,7 @@ var linkedServiceSourceName = 'ds_source-linkserver'
 var linkedServiceSinkName = 'ds_sink-linkserver'
 var sourceDatasetName = 'ds_source-dataset'
 var sinkDatasetName = 'ds_sink-dataset'
-var dataFactoryName = 'mydatafactory'
+var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
