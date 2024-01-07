@@ -39,7 +39,7 @@ var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
-var sourceDatabase = 'raisqadb '
+var sourceDatabase = 'raisqadb'
 
 // Define variables for sink server and database
 var sinkServer = sinkSqlServer
@@ -104,7 +104,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
       type: 'LinkedServiceReference'
     }
     typeProperties: {
-      tableName: sourceTableName
+      tableName: 'rig'  // Replace with your actual sink table name
     }
   }
 }
@@ -171,7 +171,7 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
             22 // Replace with your hours
           ]
           minutes: [
-            35// Replace with your minutes
+            35 // Replace with your minutes
           ]
           monthDays: [
             1 // Replace with your month day
