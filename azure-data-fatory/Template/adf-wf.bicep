@@ -1,6 +1,10 @@
 // Define parameters for the script
-param sourceTableName string = 'rig' // Source table name
-param pipelineName string = 'db_devpipeline'
+@description('Name of the source table in the SQL Server.')
+param sourceTableName string = 'rig'
+
+@description('Name of the pipeline for data copy activity.')
+param pipelineName string = 'db_raistofutura_copy'
+
 @description('User Id for the source SQL Server.')
 @secure()
 param sqlsourceUserId string
@@ -25,20 +29,21 @@ param sourceSqlServer string
 @secure()
 param sinkSqlServer string
 
-// Define variables for clarity
-var linkedServiceSourceName = 'ds_source'
-var linkedServiceSinkName = 'ds_sink'
-var sourceDatasetName = 'ds_source_dataset'
-var sinkDatasetName = 'ds_sink_dataset'
+// Define variable names for clarity
+var linkedServiceSourceName = 'ds_sqlserverlinkservice'
+var linkedServiceSinkName = 'ds_azuresqllinkservice'
+var sourceDatasetName = 'ds_sqlserverdataset'
+var sinkDatasetName = 'ds_azuresqldataset'
 var dataFactoryName = 'myappadf'
+
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
-var sourceDatabase = 'sourcedb'
+var sourceDatabase = 'raisqadb '
 
 // Define variables for sink server and database
 var sinkServer = sinkSqlServer
-var sinkDatabase = 'sinkdb'
+var sinkDatabase = 'futuraqa'
 
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
@@ -52,7 +57,8 @@ resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkeds
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
+      // Use variables for sourceServer and sourceDatabase
+      connectionString: 'Server name=${sourceServer};Database name=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
 }
@@ -64,7 +70,8 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
+      // Use variables for sinkServer and sinkDatabase
+      connectionString: 'Server name=${sinkServer};Database name=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
 }
@@ -75,7 +82,10 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
   name: sourceDatasetName
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: dataFactoryLinkedServiceSource
+    linkedServiceName: {
+      referenceName: dataFactoryLinkedServiceSource.name
+      type: 'LinkedServiceReference'
+    }
     typeProperties: {
       tableName: sourceTableName
     }
@@ -89,18 +99,96 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
 
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: dataFactoryLinkedServiceSink
+    linkedServiceName: {
+      referenceName: dataFactoryLinkedServiceSink.name
+      type: 'LinkedServiceReference'
+    }
     typeProperties: {
-      tableName: sourceTableName // Use the same table name for source and sink
+      tableName: sourceTableName
     }
   }
 }
 
-// Define pipeline
+// Define pipeline for the data copy activity
 resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
+  parent: dataFactory
   name: pipelineName
+  properties: {
+    activities: [
+      {
+        name: 'CopyData'
+        type: 'Copy'
+        typeProperties: {
+          source: {
+            type: 'SqlSource'
+            sqlReaderQuery: 'SELECT * FROM ${sourceTableName}'
+          }
+          sink: {
+            type: 'SqlSink'
+            writeBatchSize: 10000
+            writeBatchTimeout: '60.00:00:00'
+          }
+        }
+        inputs: [
+          {
+            referenceName: dataFactorySourceDataset.name
+            type: 'DatasetReference'
+          }
+        ]
+        outputs: [
+          {
+            referenceName: dataFactorySinkDataset.name
+            type: 'DatasetReference'
+          }
+        ]
+      }
+    ]
+  }
+}
+
+resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
+  name: 'Weeklytrigger'
   parent: dataFactory
   properties: {
-    activities: []
+    type: 'ScheduleTrigger'
+    pipelines: [
+      {
+        parameters: {}
+        pipelineReference: {
+          name: dataFactoryPipeline.name
+          referenceName: dataFactoryPipeline.name
+          type: 'PipelineReference'
+        }
+      }
+    ]
+    typeProperties: {
+      recurrence: {
+        endTime: '2025-01-01T00:00:00Z' // Replace with your end time
+        frequency: 'Day' // Replace with your frequency (e.g., 'Day')
+        interval: 1 // Replace with your interval
+        schedule: {
+          hours: [
+            22 // Replace with your hours
+          ]
+          minutes: [
+            35// Replace with your minutes
+          ]
+          monthDays: [
+            1 // Replace with your month day
+          ]
+          monthlyOccurrences: [
+            {
+              day: 'Thursday' // Replace with your day
+              occurrence: 1 // Replace with your occurrence
+            }
+          ]
+          weekDays: [
+            'Thursday' // Replace with your week day
+          ]
+        }
+        startTime: '2024-01-01T00:00:00Z' // Replace with your start time
+        timeZone: 'IST' // Replace with your time zone
+      }
+    }
   }
 }
