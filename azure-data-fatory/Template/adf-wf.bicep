@@ -1,10 +1,6 @@
 // Define parameters for the script
-@description('Name of the source table in the SQL Server.')
-param sourceTableName string = '[dbo].[rig]'
-
-@description('Name of the pipeline for data copy activity.')
+param sourceTableName string = 'rig' // Source table name
 param pipelineName string = 'db_devpipeline'
-
 @description('User Id for the source SQL Server.')
 @secure()
 param sqlsourceUserId string
@@ -29,25 +25,21 @@ param sourceSqlServer string
 @secure()
 param sinkSqlServer string
 
-// Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais-linksever'
-var linkedServiceSinkName = 'ds_futura-linkserver'
-var sourceDatasetName = 'ds_raisdataset'
-var sinkDatasetName = 'ds_futuradataset'
-var dataFactoryName = 'myappadf'
+// Define variables for clarity
+var linkedServiceSourceName = 'ds_source-linkserver'
+var linkedServiceSinkName = 'ds_sink-linkserver'
+var sourceDatasetName = 'ds_source-dataset'
+var sinkDatasetName = 'ds_sink-dataset'
+var dataFactoryName = 'mydatafactory'
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
-var sourceDatabase = 'raisqadb'
+var sourceDatabase = 'sourcedb'
 
 // Define variables for sink server and database
 var sinkServer = sinkSqlServer
-var sinkDatabase = 'futuraqa'
+var sinkDatabase = 'sinkdb'
 
-// Define table type
-var sinkTableType = 'dbo.CustomTableType' // Replace with your actual table type
-
-// Define table type parameter name
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: dataFactoryName
@@ -99,7 +91,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
     type: 'AzureSqlTable'
     linkedServiceName: dataFactoryLinkedServiceSink
     typeProperties: {
-      tableName: '[dbo].[rig]' // Adjust to the desired sink table name
+      tableName: sourceTableName // Use the same table name for source and sink
     }
   }
 }
@@ -122,11 +114,6 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
             type: 'SqlSink'
             writeBatchSize: 10000
             writeBatchTimeout: '60.00:00:00'
-            storedProcedureParameters: {
-              YourParameterName: 'SampleValue' // Replace with actual parameter value if needed
-              sinkTableTypeParameterName: sinkTableType
-            }
-            sqlWriterStoredProcedureName: 'CreateTableAndCopyData' // Specify the stored procedure name
           }
         }
         inputs: [
