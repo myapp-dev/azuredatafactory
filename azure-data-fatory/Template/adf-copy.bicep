@@ -1,9 +1,9 @@
 // Define parameters for the script
 @description('Name of the source table in the SQL Server.')
-param sourceTableName string = 'rig'
+param sourceTableName string = 'rigcount'
 
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'db_myapp_copy'
+param pipelineName string = 'db_rigcount_copy'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -30,10 +30,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_sqlserver'
-var linkedServiceSinkName = 'ds_azuresql'
-var sourceDatasetName = 'ds_sqldataset'
-var sinkDatasetName = 'ds_azuredataset'
+var linkedServiceSourceName = 'ds_sqlcount'
+var linkedServiceSinkName = 'ds_azuresqlcount'
+var sourceDatasetName = 'ds_sqldatasetcount'
+var sinkDatasetName = 'ds_azuredatasetcount'
 var dataFactoryName = 'myappadf'
 
 
@@ -104,7 +104,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
       type: 'LinkedServiceReference'
     }
     typeProperties: {
-      tableName: 'rig'  // Replace with your actual sink table name
+      tableName: 'rigcount'  // Replace with your actual sink table name
     }
   }
 }
