@@ -3,7 +3,7 @@
 param sourceTableName string = 'rig'
 
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'db_devpipelinee'
+param pipelineName string = 'db_devpipeline'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -30,10 +30,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais-linkseverr'
-var linkedServiceSinkName = 'ds_futura-linkserverr'
-var sourceDatasetName = 'ds_raisdatasett'
-var sinkDatasetName = 'ds_futuradatasett'
+var linkedServiceSourceName = 'ds_rais-linksever'
+var linkedServiceSinkName = 'ds_futura-linkserver'
+var sourceDatasetName = 'ds_raisdataset'
+var sinkDatasetName = 'ds_futuradataset'
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
@@ -103,7 +103,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
       type: 'LinkedServiceReference'
     }
     typeProperties: {
-      tableName: 'rig' // Corrected to specify the sink table name
+      tableName: 'rig' // Adjust to the desired sink table name
     }
   }
 }
@@ -126,6 +126,7 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
             type: 'SqlSink'
             writeBatchSize: 10000
             writeBatchTimeout: '60.00:00:00'
+            sqlWriterStoredProcedureName: 'CreateTableAndCopyData' // Specify the stored procedure name
           }
         }
         inputs: [
