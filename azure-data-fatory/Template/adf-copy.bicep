@@ -30,7 +30,7 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_sqlserverlinkservices'
+var linkedServiceSourceName = 'ds_sqlserverlinkservicess'
 var linkedServiceSinkName = 'ds_azuresqllinkservice'
 var sourceDatasetName = 'ds_sqlserverdataset'
 var sinkDatasetName = 'ds_azuresqldataset'  // Adjust with your sink dataset name
