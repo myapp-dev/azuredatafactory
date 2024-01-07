@@ -1,9 +1,9 @@
 // Define parameters for the script
 @description('Name of the source table in the SQL Server.')
-param sourceTableName string = 'rigcount'
+param sourceTableName string = 'rigcount'  // Update with your actual source table name
 
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'db_rigcount_copy'
+param pipelineName string = 'db_raistofutura_copy'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -30,12 +30,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_sqlcount'
-var linkedServiceSinkName = 'ds_azuresqlcount'
-var sourceDatasetName = 'ds_sqldatasetcount'
-var sinkDatasetName = 'ds_azuredatasetcount'
+var linkedServiceSourceName = 'ds_sqlserverlinkservices'
+var linkedServiceSinkName = 'ds_azuresqllinkservice'
+var sourceDatasetName = 'ds_sqlserverdataset'
 var dataFactoryName = 'myappadf'
-
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
@@ -57,7 +55,6 @@ resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkeds
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      // Use variables for sourceServer and sourceDatabase
       connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
@@ -70,7 +67,6 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      // Use variables for sinkServer and sinkDatabase
       connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
@@ -88,23 +84,6 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
     }
     typeProperties: {
       tableName: sourceTableName
-    }
-  }
-}
-
-// Define dataset for the sink
-resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
-  parent: dataFactory
-  name: sinkDatasetName
-
-  properties: {
-    type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSink.name
-      type: 'LinkedServiceReference'
-    }
-    typeProperties: {
-      tableName: 'rigcount'  // Replace with your actual sink table name
     }
   }
 }
@@ -135,60 +114,7 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
             type: 'DatasetReference'
           }
         ]
-        outputs: [
-          {
-            referenceName: dataFactorySinkDataset.name
-            type: 'DatasetReference'
-          }
-        ]
       }
     ]
-  }
-}
-
-resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'Weeklytrigger'
-  parent: dataFactory
-  properties: {
-    type: 'ScheduleTrigger'
-    pipelines: [
-      {
-        parameters: {}
-        pipelineReference: {
-          name: dataFactoryPipeline.name
-          referenceName: dataFactoryPipeline.name
-          type: 'PipelineReference'
-        }
-      }
-    ]
-    typeProperties: {
-      recurrence: {
-        endTime: '2025-01-01T00:00:00Z' // Replace with your end time
-        frequency: 'Day' // Replace with your frequency (e.g., 'Day')
-        interval: 1 // Replace with your interval
-        schedule: {
-          hours: [
-            22 // Replace with your hours
-          ]
-          minutes: [
-            35 // Replace with your minutes
-          ]
-          monthDays: [
-            1 // Replace with your month day
-          ]
-          monthlyOccurrences: [
-            {
-              day: 'Thursday' // Replace with your day
-              occurrence: 1 // Replace with your occurrence
-            }
-          ]
-          weekDays: [
-            'Thursday' // Replace with your week day
-          ]
-        }
-        startTime: '2024-01-01T00:00:00Z' // Replace with your start time
-        timeZone: 'IST' // Replace with your time zone
-      }
-    }
   }
 }
