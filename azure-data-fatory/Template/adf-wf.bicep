@@ -103,7 +103,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
       type: 'LinkedServiceReference'
     }
     typeProperties: {
-      tableName: sourceTableName
+      tableName: 'rig' // Corrected to specify the sink table name
     }
   }
 }
