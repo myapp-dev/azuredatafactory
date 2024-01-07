@@ -33,6 +33,7 @@ param sinkSqlServer string
 var linkedServiceSourceName = 'ds_sqlserverlinkservices'
 var linkedServiceSinkName = 'ds_azuresqllinkservice'
 var sourceDatasetName = 'ds_sqlserverdataset'
+var sinkDatasetName = 'ds_azuresqldataset'  // Adjust with your sink dataset name
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
@@ -88,6 +89,22 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
   }
 }
 
+// Define dataset for the sink
+resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+  parent: dataFactory
+  name: sinkDatasetName
+  properties: {
+    type: 'AzureSqlTable'
+    linkedServiceName: {
+      referenceName: dataFactoryLinkedServiceSink.name
+      type: 'LinkedServiceReference'
+    }
+    typeProperties: {
+      tableName: sourceTableName  // Assuming the sink table has the same structure as the source
+    }
+  }
+}
+
 // Define pipeline for the data copy activity
 resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   parent: dataFactory
@@ -100,7 +117,7 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
         typeProperties: {
           source: {
             type: 'SqlSource'
-            sqlReaderQuery: 'SELECT * FROM ${sourceTableName}'
+            sqlReaderQuery: 'SELECT DISTINCT * FROM ${sourceTableName}'  // Example: using DISTINCT to handle duplicates
           }
           sink: {
             type: 'SqlSink'
@@ -111,6 +128,12 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
         inputs: [
           {
             referenceName: dataFactorySourceDataset.name
+            type: 'DatasetReference'
+          }
+        ]
+        outputs: [
+          {
+            referenceName: dataFactorySinkDataset.name
             type: 'DatasetReference'
           }
         ]
