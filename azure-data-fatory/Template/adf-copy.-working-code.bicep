@@ -1,6 +1,6 @@
 // Define parameters for the scriptsf
 param sourceTableName string = 'welldata'
-param pipelineName string = 'db_dev_copy'
+param pipelineName string = 'db_raistofutura'
 @description('User Id for the source SQL Server.')
 @secure()
 param sqlsourceUserId string
@@ -26,10 +26,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'devrais_link'
-var linkedServiceSinkName = 'devfutura_link'
-var sourceDatasetName = 'ds_devqlrais' // Using sourceTableName parameter in the dataset name
-var sinkDatasetName = 'ds_devazurfutura'
+var linkedServiceSourceName = 'ds_raissqlserver'
+var linkedServiceSinkName = 'ds_futuraazuresqll'
+var sourceDatasetName = 'ds_sqlrais_${sourceTableName}' // Using sourceTableName parameter in the dataset name
+var sinkDatasetName = 'ds_azurfutura'
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
@@ -77,10 +77,9 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
     type: 'AzureSqlTable'
     typeProperties: {
       schema: 'dbo'
-      table: 'welldata' // Using sourceTableName parameter in the table name
+      table: sourceTableName // Using sourceTableName parameter in the table name
     }
   }
-  
 }
 
 // Define dataset for the sink
@@ -94,7 +93,6 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
       table: 'futura'
     }
   }
-  
 }
 
 // Define pipeline for the data copy activity
