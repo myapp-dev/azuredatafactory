@@ -1,6 +1,103 @@
-var dataFactoryName = 'myappadf'
-// Defining existing ADF
-resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
-  name: dataFactoryName
+param factoryName string = 'yourFactoryName'
+param ds_raissqlserver string = 'yourRaiSqlServer'
+param ds_futuraazuresqll string = 'yourFuturaAzureSql'
+
+resource dataset1 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+  name: '${factoryName}/AzureSqlTable1'
+  properties: {
+    linkedServiceName: {
+      referenceName: ds_raissqlserver
+      type: 'LinkedServiceReference'
+    }
+    annotations: []
+    type: 'AzureSqlTable'
+    schema: []
+    typeProperties: {
+      schema: 'dbo'
+      table: 'welldata'
+    }
+  }
 }
 
+resource dataset2 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+  name: '${factoryName}/AzureSqlTable2'
+  properties: {
+    linkedServiceName: {
+      referenceName: ds_futuraazuresqll
+      type: 'LinkedServiceReference'
+    }
+    annotations: []
+    type: 'AzureSqlTable'
+    schema: []
+    typeProperties: {
+      schema: 'dbo'
+      table: 'futura'
+    }
+  }
+}
+
+resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
+  name: '${factoryName}/pipeline1'
+  properties: {
+    activities: [
+      {
+        name: 'Copy data1'
+        type: 'Copy'
+        dependsOn: []
+        policy: {
+          timeout: '0.12:00:00'
+          retry: 0
+          retryIntervalInSeconds: 30
+          secureOutput: false
+          secureInput: false
+        }
+        userProperties: []
+        typeProperties: {
+          source: {
+            type: 'AzureSqlSource'
+            queryTimeout: '02:00:00'
+            partitionOption: 'None'
+          }
+          sink: {
+            type: 'AzureSqlSink'
+            writeBehavior: 'insert'
+            sqlWriterUseTableLock: false
+            tableOption: 'autoCreate'
+            disableMetricsCollection: false
+          }
+          enableStaging: false
+          translator: {
+            type: 'TabularTranslator'
+            typeConversion: true
+            typeConversionSettings: {
+              allowDataTruncation: true
+              treatBooleanAsNumber: false
+            }
+          }
+        }
+        inputs: [
+          {
+            referenceName: 'AzureSqlTable1'
+            type: 'DatasetReference'
+            parameters: {}
+          }
+        ]
+        outputs: [
+          {
+            referenceName: 'AzureSqlTable2'
+            type: 'DatasetReference'
+            parameters: {}
+          }
+        ]
+      }
+    ]
+    policy: {
+      elapsedTimeMetric: {}
+    }
+    annotations: []
+  }
+  dependsOn: [
+    dataset1
+    dataset2
+  ]
+}

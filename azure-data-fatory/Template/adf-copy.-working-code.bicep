@@ -1,10 +1,6 @@
-// Define parameters for the scripts
-@description('Name of the source table in the SQL Server.')
+// Define parameters for the scriptsf
 param sourceTableName string = 'welldata'
-
-@description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'db_raistofutura'
-
+param pipelineName string = 'db_dev_copy'
 @description('User Id for the source SQL Server.')
 @secure()
 param sqlsourceUserId string
@@ -30,12 +26,11 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_raissqlserver'
-var linkedServiceSinkName = 'ds_futuraazuresqll'
-var sourceDatasetName = 'ds_sqlrais'
-var sinkDatasetName = 'ds_azurfutura'
+var linkedServiceSourceName = 'ds_devrais'
+var linkedServiceSinkName = 'ds_devfutura'
+var sourceDatasetName = 'ds_sdevqlrais_${sourceTableName}' // Using sourceTableName parameter in the dataset name
+var sinkDatasetName = 'ds_devazurfutura'
 var dataFactoryName = 'myappadf'
-
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
@@ -52,144 +47,120 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
 
 // Define linked service for the source (SQL Server)
 resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  parent: dataFactory
   name: linkedServiceSourceName
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      // Use variables for sourceServer and sourceDatabase
       connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
+  dependsOn: [dataFactory]
 }
 
 // Define linked service for the sink (Azure SQL Database)
 resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  parent: dataFactory
   name: linkedServiceSinkName
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
-      // Use variables for sinkServer and sinkDatabase
       connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
+  dependsOn: [dataFactory]
 }
 
 // Define dataset for the source
 resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
-  parent: dataFactory
   name: sourceDatasetName
   properties: {
+    linkedServiceName: dataFactoryLinkedServiceSource
     type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSource.name
-      type: 'LinkedServiceReference'
-    }
     typeProperties: {
-      tableName: sourceTableName
+      schema: 'dbo'
+      table: 'welldata' // Using sourceTableName parameter in the table name
     }
   }
+  
 }
 
 // Define dataset for the sink
 resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
-  parent: dataFactory
   name: sinkDatasetName
-
   properties: {
+    linkedServiceName: dataFactoryLinkedServiceSink
     type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSink.name
-      type: 'LinkedServiceReference'
-    }
     typeProperties: {
-      tableName: 'welldata'  // Replace with your actual sink table name
+      schema: 'dbo'
+      table: 'futura'
     }
   }
+  
 }
 
 // Define pipeline for the data copy activity
 resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
-  parent: dataFactory
   name: pipelineName
   properties: {
     activities: [
       {
-        name: 'CopyData'
+        name: 'Copy data1'
         type: 'Copy'
+        dependsOn: []
+        policy: {
+          timeout: '0.12:00:00'
+          retry: 0
+          retryIntervalInSeconds: 30
+          secureOutput: false
+          secureInput: false
+        }
+        userProperties: []
         typeProperties: {
           source: {
-            type: 'SqlSource'
-            sqlReaderQuery: 'SELECT * FROM ${sourceTableName}'
+            type: 'AzureSqlSource'
+            queryTimeout: '02:00:00'
+            partitionOption: 'None'
           }
           sink: {
-            type: 'SqlSink'
-            writeBatchSize: 10000
-            writeBatchTimeout: '60.00:00:00'
+            type: 'AzureSqlSink'
+            writeBehavior: 'insert'
+            sqlWriterUseTableLock: false
+            tableOption: 'autoCreate'
+            disableMetricsCollection: false
+          }
+          enableStaging: false
+          translator: {
+            type: 'TabularTranslator'
+            typeConversion: true
+            typeConversionSettings: {
+              allowDataTruncation: true
+              treatBooleanAsNumber: false
+            }
           }
         }
         inputs: [
           {
-            referenceName: dataFactorySourceDataset.name
+            referenceName: 'AzureSqlTable1'
             type: 'DatasetReference'
+            parameters: {}
           }
         ]
         outputs: [
           {
-            referenceName: dataFactorySinkDataset.name
+            referenceName: 'AzureSqlTable2'
             type: 'DatasetReference'
+            parameters: {}
           }
         ]
       }
     ]
-  }
-}
-
-resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'Weeklytrigger'
-  parent: dataFactory
-  properties: {
-    type: 'ScheduleTrigger'
-    pipelines: [
-      {
-        parameters: {}
-        pipelineReference: {
-          name: dataFactoryPipeline.name
-          referenceName: dataFactoryPipeline.name
-          type: 'PipelineReference'
-        }
-      }
-    ]
-    typeProperties: {
-      recurrence: {
-        endTime: '2025-01-01T00:00:00Z' // Replace with your end time
-        frequency: 'Day' // Replace with your frequency (e.g., 'Day')
-        interval: 1 // Replace with your interval
-        schedule: {
-          hours: [
-            22 // Replace with your hours
-          ]
-          minutes: [
-            35 // Replace with your minutes
-          ]
-          monthDays: [
-            1 // Replace with your month day
-          ]
-          monthlyOccurrences: [
-            {
-              day: 'Thursday' // Replace with your day
-              occurrence: 1 // Replace with your occurrence
-            }
-          ]
-          weekDays: [
-            'Thursday' // Replace with your week day
-          ]
-        }
-        startTime: '2024-01-01T00:00:00Z' // Replace with your start time
-        timeZone: 'IST' // Replace with your time zone
-      }
+    policy: {
+      elapsedTimeMetric: {}
     }
   }
+  dependsOn: [
+    dataFactoryLinkedServiceSource
+    dataFactoryLinkedServiceSink
+    dataFactorySourceDataset
+    dataFactorySinkDataset
+  ]
 }
-
