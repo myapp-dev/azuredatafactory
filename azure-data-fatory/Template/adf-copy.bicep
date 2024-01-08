@@ -1,7 +1,10 @@
 // Define parameters for the script
+@description('Name of the source table in the SQL Server.')
 param sourceTableName string = 'welldata'
-param sinkTableName string = 'welldata'
+
+@description('Name of the pipeline for data copy activity.')
 param pipelineName string = 'db_raistofutura_copy'
+
 @description('User Id for the source SQL Server.')
 @secure()
 param sqlsourceUserId string
@@ -27,10 +30,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais'
-var linkedServiceSinkName = 'ds_futura'
-var sourceDatasetName = 'ds_raisdataset'
-var sinkDatasetName = 'ds_futuradataset'
+var linkedServiceSourceName = 'ds_sqlserverlinkservices'
+var linkedServiceSinkName = 'ds_azuresqllinkservice'
+var sourceDatasetName = 'ds_sqlserverdataset'
+var sinkDatasetName = 'ds_azuresqldataset'
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
@@ -53,6 +56,7 @@ resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkeds
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
+      // Use variables for sourceServer and sourceDatabase
       connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
@@ -65,6 +69,7 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
+      // Use variables for sinkServer and sinkDatabase
       connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
@@ -76,7 +81,10 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
   name: sourceDatasetName
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: dataFactoryLinkedServiceSource
+    linkedServiceName: {
+      referenceName: dataFactoryLinkedServiceSource.name
+      type: 'LinkedServiceReference'
+    }
     typeProperties: {
       tableName: sourceTableName
     }
@@ -87,11 +95,15 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
 resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
   parent: dataFactory
   name: sinkDatasetName
+
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: dataFactoryLinkedServiceSink
+    linkedServiceName: {
+      referenceName: dataFactoryLinkedServiceSink.name
+      type: 'LinkedServiceReference'
+    }
     typeProperties: {
-      tableName: sinkTableName
+      tableName: 'dbo.rigg'  // Replace with your actual sink table name
     }
   }
 }
