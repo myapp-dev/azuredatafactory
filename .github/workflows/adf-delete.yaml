@@ -20,10 +20,8 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-       
-      
 
       # Delete dataset in Azure Data Factory
       - name: Delete Dataset
         run: |
-          az data factory dataset delete --resource-group ${{secrets.RESOURCE_GROUP}} --factory-name  myappadf --name ds_azuresqldataset
+          az data factory dataset delete --resource-group ${{secrets.RESOURCE_GROUP}} --factory-name myappadf --name ds_azuresqldataset
