@@ -30,6 +30,6 @@ jobs:
           scope: resourcegroup
           region: East US
           resourceGroupName: ${{secrets.RESOURCE_GROUP}}
-          template: azure-data-fatory/Template/adf-copy.bicep
+          template: azure-data-fatory/Template/adf-copy.-working-code.bicep
           parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQL_SOURCEUSERID}} sqlsourcePassword=${{secrets.SQL_SOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQL_SINKUSERID}} sqlsinkPassword=${{secrets.SQL_SINKPASSWORD}} sourceSqlServer=${{secrets.SQL_SOURCESERVER}} sinkSqlServer=${{secrets.SQL_SINKSERVER}}
  

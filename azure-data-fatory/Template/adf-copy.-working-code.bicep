@@ -1,6 +1,6 @@
 // Define parameters for the script
 @description('Name of the source table in the SQL Server.')
-param sourceTableName string = 'sample'
+param sourceTableName string = 'welldata'
 
 @description('Name of the pipeline for data copy activity.')
 param pipelineName string = 'db_raistofutura'
@@ -143,6 +143,53 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
         ]
       }
     ]
+  }
+}
+
+resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
+  name: 'Weeklytrigger'
+  parent: dataFactory
+  properties: {
+    type: 'ScheduleTrigger'
+    pipelines: [
+      {
+        parameters: {}
+        pipelineReference: {
+          name: dataFactoryPipeline.name
+          referenceName: dataFactoryPipeline.name
+          type: 'PipelineReference'
+        }
+      }
+    ]
+    typeProperties: {
+      recurrence: {
+        endTime: '2025-01-01T00:00:00Z' // Replace with your end time
+        frequency: 'Day' // Replace with your frequency (e.g., 'Day')
+        interval: 1 // Replace with your interval
+        schedule: {
+          hours: [
+            22 // Replace with your hours
+          ]
+          minutes: [
+            35 // Replace with your minutes
+          ]
+          monthDays: [
+            1 // Replace with your month day
+          ]
+          monthlyOccurrences: [
+            {
+              day: 'Thursday' // Replace with your day
+              occurrence: 1 // Replace with your occurrence
+            }
+          ]
+          weekDays: [
+            'Thursday' // Replace with your week day
+          ]
+        }
+        startTime: '2024-01-01T00:00:00Z' // Replace with your start time
+        timeZone: 'IST' // Replace with your time zone
+      }
+    }
   }
 }
 
