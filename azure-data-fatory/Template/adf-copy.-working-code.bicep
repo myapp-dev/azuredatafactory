@@ -192,15 +192,15 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
     ]
     typeProperties: {
       recurrence: {
-        endTime: '2025-01-01T00:00:00Z' // Replace with your end time
+        endTime: '2024-01-01T18:10:00Z' // Replace with your end time
         frequency: 'Day' // Replace with your frequency (e.g., 'Day')
         interval: 1 // Replace with your interval
         schedule: {
           hours: [
-            03// Replace with your hours
+            03 // Replace with your hours
           ]
           minutes: [
-            00 // Replace with your minutes
+            00// Replace with your minutes
           ]
           monthDays: [
             1 // Replace with your month day
@@ -215,7 +215,10 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
             'Monday' // Replace with your week day
           ]
         }
+        startTime: '2024-01-01T18:00:00Z' // Replace with your start time
+        timeZone: 'IST' // Replace with your time zone
       }
     }
   }
 }
+
