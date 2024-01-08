@@ -26,9 +26,9 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_devrais'
-var linkedServiceSinkName = 'ds_devfutura'
-var sourceDatasetName = 'ds_sdevqlrais_${sourceTableName}' // Using sourceTableName parameter in the dataset name
+var linkedServiceSourceName = 'devrais_link'
+var linkedServiceSinkName = 'devfutura_link'
+var sourceDatasetName = 'ds_devqlrais' // Using sourceTableName parameter in the dataset name
 var sinkDatasetName = 'ds_devazurfutura'
 var dataFactoryName = 'myappadf'
 
