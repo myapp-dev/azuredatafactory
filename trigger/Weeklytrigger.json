@@ -1,0 +1,45 @@
+{
+	"name": "Weeklytrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "db_raistofutura",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2024-01-01T00:00:00",
+				"endTime": "2025-01-01T00:00:00",
+				"timeZone": "IST",
+				"schedule": {
+					"minutes": [
+						35
+					],
+					"hours": [
+						22
+					],
+					"weekDays": [
+						"Thursday"
+					],
+					"monthDays": [
+						1
+					],
+					"monthlyOccurrences": [
+						{
+							"day": "Thursday",
+							"occurrence": 1
+						}
+					]
+				}
+			}
+		}
+	}
+}
