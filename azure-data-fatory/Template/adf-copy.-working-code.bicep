@@ -28,7 +28,7 @@ param sinkSqlServer string
 // Define variable names for clarity
 var linkedServiceSourceName = 'ds_rais'
 var linkedServiceSinkName = 'ds_futura'
-var sourceDatasetName = 'ds_sqlrais_${sourceTableName}' // Using sourceTableName parameter in the dataset name
+var sourceDatasetName = 'ds_sqlrais' // Using sourceTableName parameter in the dataset name
 var sinkDatasetName = 'ds_azurfutura'
 var dataFactoryName = 'myappadf'
 
@@ -47,26 +47,28 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
 
 // Define linked service for the source (SQL Server)
 resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
+  parent: dataFactory
   name: linkedServiceSourceName
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
+      // Use variables for sourceServer and sourceDatabase
       connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
     }
   }
-  dependsOn: [dataFactory]
 }
 
 // Define linked service for the sink (Azure SQL Database)
 resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
+  parent: dataFactory
   name: linkedServiceSinkName
   properties: {
     type: 'AzureSqlDatabase'
     typeProperties: {
+      // Use variables for sinkServer and sinkDatabase
       connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
     }
   }
-  dependsOn: [dataFactory]
 }
 
 // Define dataset for the source
