@@ -1,10 +1,7 @@
 // Define parameters for the script
-@description('Name of the source table in the SQL Server.')
-param sourceTableName string = 'rigcount'  // Update with your actual source table name
-
-@description('Name of the pipeline for data copy activity.')
+param sourceTableName string = 'welldata'
+param sinkTableName string = 'welldata'
 param pipelineName string = 'db_raistofutura_copy'
-
 @description('User Id for the source SQL Server.')
 @secure()
 param sqlsourceUserId string
@@ -33,7 +30,7 @@ param sinkSqlServer string
 var linkedServiceSourceName = 'ds_sqlserverlinkservicess'
 var linkedServiceSinkName = 'ds_azuresqllinkservice'
 var sourceDatasetName = 'ds_sqlserverdataset'
-var sinkDatasetName = 'ds_azuresqldataset'  // Adjust with your sink dataset name
+var sinkDatasetName = 'ds_azuresqldataset'
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
@@ -79,10 +76,7 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
   name: sourceDatasetName
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSource.name
-      type: 'LinkedServiceReference'
-    }
+    linkedServiceName: dataFactoryLinkedServiceSource
     typeProperties: {
       tableName: sourceTableName
     }
@@ -95,12 +89,9 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
   name: sinkDatasetName
   properties: {
     type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSink.name
-      type: 'LinkedServiceReference'
-    }
+    linkedServiceName: dataFactoryLinkedServiceSink
     typeProperties: {
-      tableName: sourceTableName  // Assuming the sink table has the same structure as the source
+      tableName: sinkTableName
     }
   }
 }
@@ -114,15 +105,22 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
       {
         name: 'CopyData'
         type: 'Copy'
+        dependsOn: [
+          dataFactorySourceDataset
+          dataFactorySinkDataset
+        ]
         typeProperties: {
           source: {
             type: 'SqlSource'
-            sqlReaderQuery: 'SELECT DISTINCT * FROM ${sourceTableName}'  // Example: using DISTINCT to handle duplicates
+            sqlReaderQuery: 'SELECT DISTINCT * FROM ${sourceTableName}'
           }
           sink: {
             type: 'SqlSink'
             writeBatchSize: 10000
             writeBatchTimeout: '60.00:00:00'
+            writeBehavior: {
+              tableOptions: 'AutoCreateTable'
+            }
           }
         }
         inputs: [
