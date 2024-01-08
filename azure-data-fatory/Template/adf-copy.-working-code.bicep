@@ -104,7 +104,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
       type: 'LinkedServiceReference'
     }
     typeProperties: {
-      tableName: 'sample'  // Replace with your actual sink table name
+      tableName: 'welldata'  // Replace with your actual sink table name
     }
   }
 }
