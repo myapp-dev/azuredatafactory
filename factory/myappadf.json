@@ -1,0 +1,9 @@
+{
+	"name": "myappadf",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "7e826fbd-427f-4a80-b7ec-cb12b59e178c",
+		"tenantId": "6712c173-cfc7-47a7-b8ee-cf07ef93f18d"
+	}
+}

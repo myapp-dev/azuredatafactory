@@ -1,0 +1,15 @@
+{
+	"name": "ds_azurfutura",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ds_futuraazuresqll",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"typeProperties": {
+			"tableName": "welldata"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

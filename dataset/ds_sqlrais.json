@@ -1,0 +1,15 @@
+{
+	"name": "ds_sqlrais",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ds_raissqlserver",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"typeProperties": {
+			"tableName": "welldata"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
