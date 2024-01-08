@@ -1,6 +1,7 @@
-// Define parameters for the scriptsf
-param sourceTableName string = 'welldata'
-param pipelineName string = 'db_raistofutura'
+// Define parameters for the script
+@description('Name of the pipeline for data copy activity.')
+param pipelineName string = 'db_raistofutura_copy'
+
 @description('User Id for the source SQL Server.')
 @secure()
 param sqlsourceUserId string
@@ -26,11 +27,12 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais'
-var linkedServiceSinkName = 'ds_futura'
-var sourceDatasetName = 'ds_sqlrais' // Using sourceTableName parameter in the dataset name
-var sinkDatasetName = 'ds_azurfutura'
+var linkedServiceSourceName = 'ds_sqlserveronprem'
+var linkedServiceSinkName = 'ds_azuresqllicloud'
+var sourceDatasetName = 'ds_sqlserveronprem'
+var sinkDatasetName = 'ds_azuresqlcloud'
 var dataFactoryName = 'myappadf'
+
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
@@ -73,37 +75,50 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
 
 // Define dataset for the source
 resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+  parent: dataFactory
   name: sourceDatasetName
   properties: {
-    linkedServiceName: dataFactoryLinkedServiceSource
+    linkedServiceName: {
+      referenceName: dataFactoryLinkedServiceSource.name
+      type: 'LinkedServiceReference'
+    }
+    annotations: []
     type: 'AzureSqlTable'
+    schema: []
     typeProperties: {
       schema: 'dbo'
-      table: sourceTableName // Using sourceTableName parameter in the table name
+      table: 'welldata'
     }
   }
 }
 
 // Define dataset for the sink
 resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+  parent: dataFactory
   name: sinkDatasetName
+
   properties: {
-    linkedServiceName: dataFactoryLinkedServiceSink
+    linkedServiceName: {
+      referenceName: dataFactoryLinkedServiceSink.name
+      type: 'LinkedServiceReference'
+    }
+    annotations: []
     type: 'AzureSqlTable'
+    schema: []
     typeProperties: {
       schema: 'dbo'
-      table: 'futura'
+      table: 'opremdata'
     }
   }
 }
 
-// Define pipeline for the data copy activity
-resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
+resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
+  parent: dataFactory
   name: pipelineName
   properties: {
     activities: [
       {
-        name: 'Copy data1'
+        name: 'Copy data'
         type: 'Copy'
         dependsOn: []
         policy: {
@@ -139,14 +154,14 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
         }
         inputs: [
           {
-            referenceName: 'AzureSqlTable1'
+            referenceName: 'sourceDatasetName'
             type: 'DatasetReference'
             parameters: {}
           }
         ]
         outputs: [
           {
-            referenceName: 'AzureSqlTable2'
+            referenceName: 'sinkDatasetName'
             type: 'DatasetReference'
             parameters: {}
           }
@@ -156,11 +171,10 @@ resource dataFactoryPipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-
     policy: {
       elapsedTimeMetric: {}
     }
+    annotations: []
   }
   dependsOn: [
-    dataFactoryLinkedServiceSource
-    dataFactoryLinkedServiceSink
-    dataFactorySourceDataset
+    dataFactorySourceDataset 
     dataFactorySinkDataset
   ]
 }
