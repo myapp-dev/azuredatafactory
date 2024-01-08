@@ -1,0 +1,29 @@
+on:
+  push:
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./  # Checkout to the root directory
+
+      # Log into Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+       
+      
+
+      # Delete dataset in Azure Data Factory
+      - name: Delete Dataset
+        run: |
+          az data factory dataset delete --resource-group ${{secrets.RESOURCE_GROUP}} --factory-name  myappadf --name ds_azuresqldataset

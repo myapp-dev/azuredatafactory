@@ -30,7 +30,6 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_sqlserverlinkservices'
 var linkedServiceSinkName = 'ds_azuresqllinkservice'
 var sourceDatasetName = 'ds_sqlserverdataset'
 var sinkDatasetName = 'ds_azuresqldataset'
@@ -49,63 +48,19 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: dataFactoryName
 }
 
-// Define linked service for the source (SQL Server)
-resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  parent: dataFactory
-  name: linkedServiceSourceName
-  properties: {
-    type: 'AzureSqlDatabase'
-    typeProperties: {
-      // Use variables for sourceServer and sourceDatabase
-      connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
-    }
-  }
-}
-
-// Define linked service for the sink (Azure SQL Database)
-resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  parent: dataFactory
+// Define existing linked service for the sink (Azure SQL Database)
+resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' existing = {
   name: linkedServiceSinkName
-  properties: {
-    type: 'AzureSqlDatabase'
-    typeProperties: {
-      // Use variables for sinkServer and sinkDatabase
-      connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
-    }
-  }
 }
 
-// Define dataset for the source
-resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
-  parent: dataFactory
+// Define existing dataset for the source
+resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' existing = {
   name: sourceDatasetName
-  properties: {
-    type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSource.name
-      type: 'LinkedServiceReference'
-    }
-    typeProperties: {
-      tableName: sourceTableName
-    }
-  }
 }
 
-// Define dataset for the sink
-resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
-  parent: dataFactory
+// Define existing dataset for the sink
+resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' existing = {
   name: sinkDatasetName
-
-  properties: {
-    type: 'AzureSqlTable'
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSink.name
-      type: 'LinkedServiceReference'
-    }
-    typeProperties: {
-      tableName: 'dbo.rigg'  // Replace with your actual sink table name
-    }
-  }
 }
 
 // Define pipeline for the data copy activity
