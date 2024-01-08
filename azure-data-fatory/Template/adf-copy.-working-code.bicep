@@ -1,6 +1,6 @@
 // Define parameters for the script
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'db_raistofutura_copy'
+param pipelineName string = 'db_raiscopy'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -27,10 +27,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_sqlserveronprem'
-var linkedServiceSinkName = 'ds_azuresqllicloud'
-var sourceDatasetName = 'ds_sqlserveronprem'
-var sinkDatasetName = 'ds_azuresqlcloud'
+var linkedServiceSourceName = 'ds_sqlss'
+var linkedServiceSinkName = 'ds_azuresqls'
+var sourceDatasetName = 'ds_sqlonprem'
+var sinkDatasetName = 'ds_azurcloud'
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
@@ -173,4 +173,49 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
     annotations: []
   }
 
+}
+
+resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
+  name: 'raisfuturatrigger'
+  parent: dataFactory
+  properties: {
+    type: 'ScheduleTrigger'
+    pipelines: [
+      {
+        parameters: {}
+        pipelineReference: {
+          name: pipeline.name
+          referenceName: pipeline.name
+          type: 'PipelineReference'
+        }
+      }
+    ]
+    typeProperties: {
+      recurrence: {
+        endTime: '2025-01-01T00:00:00Z' // Replace with your end time
+        frequency: 'Day' // Replace with your frequency (e.g., 'Day')
+        interval: 1 // Replace with your interval
+        schedule: {
+          hours: [
+            03// Replace with your hours
+          ]
+          minutes: [
+            00 // Replace with your minutes
+          ]
+          monthDays: [
+            1 // Replace with your month day
+          ]
+          monthlyOccurrences: [
+            {
+              day: 'Monday' // Replace with your day
+              occurrence: 1 // Replace with your occurrence
+            }
+          ]
+          weekDays: [
+            'Monday' // Replace with your week day
+          ]
+        }
+      }
+    }
+  }
 }
