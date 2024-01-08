@@ -33,7 +33,6 @@ var sourceDatasetName = 'ds_sqlserveronprem'
 var sinkDatasetName = 'ds_azuresqlcloud'
 var dataFactoryName = 'myappadf'
 
-
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
 var sourceDatabase = 'raisqadb'
@@ -154,14 +153,14 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
         }
         inputs: [
           {
-            referenceName: 'sourceDatasetName'
+            referenceName: dataFactorySourceDataset.name
             type: 'DatasetReference'
             parameters: {}
           }
         ]
         outputs: [
           {
-            referenceName: 'sinkDatasetName'
+            referenceName: dataFactorySinkDataset.name
             type: 'DatasetReference'
             parameters: {}
           }
@@ -173,8 +172,5 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
     }
     annotations: []
   }
-  dependsOn: [
-    dataFactorySourceDataset 
-    dataFactorySinkDataset
-  ]
+
 }
