@@ -1,0 +1,20 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+      {
+        "name": "YourDatasetName",  // Replace with your dataset name
+        "type": "Microsoft.DataFactory/factories/datasets",
+        "apiVersion": "2018-06-01",
+        "properties": {
+          "linkedServiceName": {
+            "referenceName": "YourLinkedServiceName",  // Replace with your linked service name
+            "type": "LinkedServiceReference"
+          }
+        },
+        "dependsOn": []
+      }
+      // Add more resources as needed
+    ]
+  }
+  

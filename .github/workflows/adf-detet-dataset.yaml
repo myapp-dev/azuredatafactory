@@ -1,0 +1,39 @@
+name: delete-dataset-adf
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./  # Checkout to the root directory
+
+      # Log into Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+       
+      # Deploy ARM template
+      - name: Deploy ARM Template
+        uses: azure/arm-deploy@v1
+        with:
+          scope: resourcegroup
+          region: East US
+          resourceGroupName: ${{secrets.RESOURCE_GROUP}}
+          #template: azure-data-fatory/Template/adf-copy.-working-code.bicep
+          #parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQL_SOURCEUSERID}} sqlsourcePassword=${{secrets.SQL_SOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQL_SINKUSERID}} sqlsinkPassword=${{secrets.SQL_SINKPASSWORD}} sourceSqlServer=${{secrets.SQL_SOURCESERVER}} sinkSqlServer=${{secrets.SQL_SINKSERVER}}
+
+      # Delete Azure Data Factory Dataset
+      - name: Delete Azure Data Factory Dataset
+        run: |
+          az datafactory dataset delete --myappadf Azure-data-migrationsS --resource-group ${{secrets.RESOURCE_GROUP}} --name ds_sqlrais
+        
