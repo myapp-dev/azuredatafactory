@@ -1,6 +1,6 @@
 // Define parameters for the script
 @description('Name of the source table in the SQL Server.')
-param sourceTableName string = 'tcs'
+param sourceTableName string = 'sample'
 
 @description('Name of the pipeline for data copy activity.')
 param pipelineName string = 'db_raistofutura'
@@ -104,7 +104,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
       type: 'LinkedServiceReference'
     }
     typeProperties: {
-      tableName: 'tcs'  // Replace with your actual sink table name
+      tableName: 'sample'  // Replace with your actual sink table name
     }
   }
 }
