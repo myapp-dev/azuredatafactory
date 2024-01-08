@@ -1,4 +1,4 @@
-// Define parameters for the script
+// Define parameters for the scripts
 @description('Name of the source table in the SQL Server.')
 param sourceTableName string = 'welldata'
 
