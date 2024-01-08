@@ -23,21 +23,20 @@ jobs:
 
       - name: Install ADF Utilities package
         run: npm install
-        working-directory: azuredatafactory/ADFroot/build
 
       - name: Validate
         run: npm run build validate ${{ github.workspace }} /subscriptions/6cdd51be-69f2-4db8-ace0-61086685ec5c/resourceGroups/project-dev/providers/Microsoft.DataFactory/factories/myappadf
-        working-directory: azuredatafactory/ADFroot/build
+        working-directory: /home/runner/work/azuredatafactory/azuredatafactory/ADFroot/build
 
       - name: Validate and Generate ARM template
         run: npm run build export ${{ github.workspace }} /subscriptions/6cdd51be-69f2-4db8-ace0-61086685ec5c/resourceGroups/project-dev/providers/Microsoft.DataFactory/factories/myappadf "ExportedArmTemplate"
-        working-directory: azuredatafactory/ADFroot/build
+        working-directory: /home/runner/work/azuredatafactory/azuredatafactory/ADFroot/build
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: ExportedArmTemplate
-          path: azuredatafactory/ADFroot/build/ExportedArmTemplate
+          path: /home/runner/work/azuredatafactory/azuredatafactory/ADFroot/build/ExportedArmTemplate
 
   release:
     needs: build
