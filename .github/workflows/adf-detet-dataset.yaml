@@ -26,5 +26,5 @@ jobs:
       # Delete Azure Data Factory Dataset
       - name: Delete Azure Data Factory Dataset
         run: |
-          az datafactory dataset delete --myappadf  --resource-group ${{secrets.RESOURCE_GROUP}} --name ds_sqlrais
+          az datafactory dataset delete ----factory-name myappadf  --resource-group ${{secrets.RESOURCE_GROUP}} --name ds_sqlrais
         
