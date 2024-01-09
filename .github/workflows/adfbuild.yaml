@@ -18,8 +18,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Run PowerShell script
-      uses: azure/powershell@v1
-      with:
-        inlineScript: |
-          Remove-AzDataFactoryDataset -Force -DataFactoryName "myappadfa" -Name "ds_myazurcloud" -ResourceGroupName "project-dev"
+    - name: Build Module
+      shell: pwsh
+      run: |
+        azure-data-fatory/Template/script.ps1 -Task ModuleBuild
