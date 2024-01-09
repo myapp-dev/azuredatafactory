@@ -1,24 +1,14 @@
-name: Remove Azure Data Factory Dataset
+name : pws script
 
 on:
   push:
-    branches:
-      - main
-
+    
 jobs:
-  remove-dataset:
-    runs-on: windows-latest
-
+  build-and-deploy:
+    name: run script
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Build Module
-      shell: pwsh
-      run: |
-        azure-data-fatory/Template/script.ps1 -Task ModuleBuild
+      - uses: action/checkout@v1
+      - name: sctipt
+        run: Write-Host 'hello,world'
+        shell: pwsh
