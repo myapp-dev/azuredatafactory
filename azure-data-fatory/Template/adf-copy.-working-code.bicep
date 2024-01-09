@@ -31,7 +31,7 @@ var linkedServiceSourceName = 'ds_mysql'
 var linkedServiceSinkName = 'ds_muazuresql'
 var sourceDatasetName = 'ds_mysqlonprem'
 var sinkDatasetName = 'ds_myazurcloud'
-var dataFactoryName = 'myappadf'
+var dataFactoryName = 'myappadfa'
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
