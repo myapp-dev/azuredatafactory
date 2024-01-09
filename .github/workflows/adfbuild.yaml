@@ -1,14 +1,14 @@
-name : pws script
-
-on:
+name: CI
+on: 
   push:
     
+
 jobs:
-  build-and-deploy:
-    name: run script
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: sctipt
-        run: Write-Host 'hello,world'
-        shell: pwsh
+    build:
+      name: Run Script
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v1
+        - name: Script
+          run: ./script.ps1
+          shell: pwsh
