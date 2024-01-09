@@ -7,25 +7,19 @@ permissions:
       contents: read
 
 jobs:
-  deploy-and-delete-adf:
-    runs-on: windows-latest
-    environment:
-      name: dev
+  deploy-adf-objects:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          path: ./  # Checkout to the root directory
-
-      # Log into Azure
+      - name: Install Azure PowerShell
+        run: Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
+      - name: Install Azure Data Factory module
+        run: Install-Module -Name Az.DataFactory -Scope CurrentUser -Repository PSGallery -Force
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-
-      - name: Deploy using PowerShell script
-        shell: pwsh
+      - name: Deploy pipeline and dataset
         run: |
           azure-data-fatory/Template/script.ps1
-
-      

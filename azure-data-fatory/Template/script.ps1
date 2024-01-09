@@ -1,5 +1,10 @@
 
 
+Import-Module Az.Accounts  # Import Azure modules for authentication
+Import-Module Az.DataFactory # Import Azure Data Factory module
+
+# Login to Azure
+Connect-AzAccount
 
 # Specify resource group, data factory name, pipeline name, and dataset name
 $resourceGroupName = "project-dev"
