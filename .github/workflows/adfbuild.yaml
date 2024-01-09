@@ -23,11 +23,13 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-          client-id: ${{secrets.AZURE_CLIENT_ID}}
-          tenant-id: ${{secrets.AZURE_TENANT_ID}}
-          enable-AzPSSession: true 
-      - name: Run Azure PowerShell Script File
-        uses: azure/powershell@v1
+          enable-AzPSSession: true
+
+      - name: Azure PowerShell Action
+        uses: Azure/powershell@v1
         with:
-          inlineScript: ./azure-data-factory/Template/adf-copy-working-code.bicep myresourcegroup myresourcename
-          azPSVersion: "latest"
+          # Specify the Az PowerShell script here.
+          inlineScript: |
+            .\deployFA.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
+          # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
+          azPSVersion: latest
