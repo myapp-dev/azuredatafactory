@@ -28,11 +28,4 @@ jobs:
         run: |
           azure-data-fatory/Template/script.ps1
 
-      - name: Install Azure PowerShell
-        run: Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
-
-      - name: Login to Azure
-        run: Connect-AzAccount -UseDeviceAuthentication
-
-      - name: Delete ADF Pipeline and Dataset
-        run: azure-data-fatory/Template/script.ps1
+      

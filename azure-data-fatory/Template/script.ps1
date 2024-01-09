@@ -1,7 +1,5 @@
 
 
-# Login to Azure
-Connect-AzAccount
 
 # Specify resource group, data factory name, pipeline name, and dataset name
 $resourceGroupName = "project-dev"
