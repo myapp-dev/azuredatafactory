@@ -4,7 +4,7 @@ name: AzurePowerShellSampleWithFile
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Check Out
         uses: actions/checkout@v3
