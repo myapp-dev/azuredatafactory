@@ -1,18 +1,29 @@
-# Set your Azure subscription ID, resource group name, Data Factory name, pipeline name, and dataset name
-$subscriptionId = "<YourSubscriptionId>"
-$resourceGroupName = "<YourResourceGroupName>"
-$dataFactoryName = "<YourDataFactoryName>"
-$pipelineName = "<YourPipelineName>"
-$datasetName = "<YourDatasetName>"
-
-# Sign in to Azure account
-az login
-
-# Set the current subscription
-az account set --subscription $subscriptionId
-
-# Delete the pipeline
-az datafactory pipeline delete --resource-group $resourceGroupName --factory-name $dataFactoryName --name $pipelineName
-
-# Delete the dataset
-az datafactory dataset delete --resource-group $resourceGroupName --factory-name $dataFactoryName --name $datasetName
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.DataFactory/factories/pipelines",
+      "apiVersion": "2018-06-01",
+      "name": "DeleteDatasetActivity",
+      "properties": {
+        "activities": [
+          {
+            "name": "DeleteDataset",
+            "type": "Delete",
+            "linkedServiceName": {
+              "referenceName": "<name_of_linked_service>",
+              "type": "LinkedServiceReference"
+            },
+            "typeProperties": {
+              "dataset": {
+                "referenceName": "<dataset_name>",
+                "type": "DatasetReference"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

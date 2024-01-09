@@ -27,10 +27,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_sqlss'
-var linkedServiceSinkName = 'ds_azuresqls'
-var sourceDatasetName = 'ds_sqlonprem'
-var sinkDatasetName = 'ds_azurcloud'
+var linkedServiceSourceName = 'ds_mysql'
+var linkedServiceSinkName = 'ds_muazuresql'
+var sourceDatasetName = 'ds_mysqlonprem'
+var sinkDatasetName = 'ds_myazurcloud'
 var dataFactoryName = 'myappadf'
 
 // Define variables for source server and database
@@ -85,7 +85,6 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
-      schema: 'dbo'
       table: 'welldata'
     }
   }
@@ -105,8 +104,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
-      schema: 'dbo'
-      table: 'opremdata'
+      table: 'welldatacount'
     }
   }
 }

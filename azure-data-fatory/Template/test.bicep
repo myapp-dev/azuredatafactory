@@ -7,7 +7,7 @@ param enableLogging bool
 param linkedServiceName string
 param logFilePath string
 
-resource deleteActivity 'Microsoft.DataFactory/factories/pipelines/activities@2021-06-01' = {
+resource deleteActivity 'Microsoft.DataFactory/factories/pipelines/activities@2018-06-01' = {
   name: deleteActivityName
   properties: {
     type: 'Delete'
