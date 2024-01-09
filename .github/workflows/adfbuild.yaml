@@ -1,20 +1,34 @@
-name: AzurePowerShellSampleWithFile
-
-on: [push]  # Trigger on push events
+on:
+  push:
+permissions:
+      id-token: write
+      contents: read
 
 jobs:
-  build:
-    runs-on: windows-latest
-
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
     steps:
-      - name: Check Out
+      - name: Checkout
         uses: actions/checkout@v3
+        with:
+          path: ./  # Checkout to the root directory
 
-      - name: Login Azure
+      # Log into Azure
+      - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
+        # Optionally, add `audience` if required:
+        # audience: <your-app-registration-client-id>
+
+      - name: Verify Azure Credentials
+        run: |
+          Write-Host "Azure Credentials Secret Content:"
+          Write-Host ${{secrets.AZURE_CREDENTIALS}}
+          # Add more logging or checks as needed
 
       - name: Azure PowerShell Action
         uses: Azure/powershell@v1
