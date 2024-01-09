@@ -1,20 +1,21 @@
 name: delete-adf-resource
+
 on:
   push:
 permissions:
-  id-token: write
-  contents: read
+      id-token: write
+      contents: read
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Setup Azure PowerShell
-        uses: azure/setup-powershell@v1
+        uses: azure/setup-powershell@v1.1.0
         with:
           azPSVersion: 'latest'
 
@@ -25,7 +26,7 @@ jobs:
 
           Write-Host "Deploying Azure Data Factory resources..."
 
-          azure-data-fatory/Template/script.ps1
+          ./azure-data-factory/Template/script.ps1
 
           Write-Host "Deployment completed."
 
