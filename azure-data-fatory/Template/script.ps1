@@ -5,7 +5,8 @@ Install-Module -Name Az -Force -AllowClobber
 Import-Module Az
 
 # Authenticate to Azure
-Connect-AzAccount -ServicePrincipal creds: ${secrets.AZURE_CREDENTIALS}
+# Authenticate to Azure
+Connect-AzAccount -ServicePrincipal -Credential $secrets.AZURE_CREDENTIALS
 # Define variables
 $resourceGroupName = "project-dev"
 $dataFactoryName = "myappadf"
