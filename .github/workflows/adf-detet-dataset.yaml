@@ -1,34 +1,35 @@
+name: delete-adf-resource
 on:
   push:
 permissions:
-      id-token: write
-      contents: read
+  id-token: write
+  contents: read
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: dev
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: ./  # Checkout to the root directory
 
-      # Log into Azure
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Azure PowerShell
+        uses: azure/setup-powershell@v1
+        with:
+          azPSVersion: 'latest'
+
+      - name: Execute PowerShell script
+        run: |
+          $DataFactoryName = "myappdev"
+          $ResourceGroupName = "project-dev"
+
+          Write-Host "Deploying Azure Data Factory resources..."
+
+          azure-data-fatory/Template/script.ps1
+
+          Write-Host "Deployment completed."
+
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-       
-      # Deploy ARM template and delete pipeline
-      - name: Deploy ARM Template and Delete Pipeline
-        uses: azure/arm-deploy@v1
-        with:
-          scope: resourcegroup
-          region: East US
-          resourceGroupName: ${{secrets.RESOURCE_GROUP}}
-          run: |
-            az module install --name azurerm
-            Remove-AzureRmDataFactoryPipeline -Force -Name "ds_raiscopy" -DataFactoryName "myappadf" -ResourceGroupName ${{secrets.RESOURCE_GROUP}}
-          parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQL_SOURCEUSERID}} sqlsourcePassword=${{secrets.SQL_SOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQL_SINKUSERID}} sqlsinkPassword=${{secrets.SQL_SINKPASSWORD}} sourceSqlServer=${{secrets.SQL_SOURCESERVER}} sinkSqlServer=${{secrets.SQL_SINKSERVER}}
