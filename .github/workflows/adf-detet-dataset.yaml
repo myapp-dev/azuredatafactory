@@ -2,13 +2,12 @@ name: powershell-deployment
 
 on:
   push:
-
 permissions:
-  id-token: write
-  contents: read
+      id-token: write
+      contents: read
 
 jobs:
-  build-and-deploy:
+  deploy-and-delete-adf:
     runs-on: windows-latest
     environment:
       name: dev
@@ -24,7 +23,16 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
 
-      - name: Run PowerShell script
+      - name: Deploy using PowerShell script
         shell: pwsh
         run: |
-          .\azure-data-fatory\Template\script.ps1
+          azure-data-fatory/Template/script.ps1
+
+      - name: Install Azure PowerShell
+        run: Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
+
+      - name: Login to Azure
+        run: Connect-AzAccount -UseDeviceAuthentication
+
+      - name: Delete ADF Pipeline and Dataset
+        run: azure-data-fatory/Template/script.ps1
