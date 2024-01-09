@@ -28,8 +28,6 @@ jobs:
       - name: Azure PowerShell Action
         uses: Azure/powershell@v1
         with:
-          # Specify the Az PowerShell script here.
           inlineScript: |
-            .\deployFA.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
-          # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
+            ./deployFA.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
           azPSVersion: latest
