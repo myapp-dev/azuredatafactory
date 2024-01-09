@@ -1,10 +1,11 @@
-on: [push]
-
 name: AzurePowerShellSampleWithFile
+
+on: [push]  # Trigger on push events
 
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
       - name: Check Out
         uses: actions/checkout@v3
@@ -18,6 +19,14 @@ jobs:
       - name: Azure PowerShell Action
         uses: Azure/powershell@v1
         with:
+          pwsh: true  # Use PowerShell core
           inlineScript: |
-            ./deployFA.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
+            # Ensure script path and permissions are correct
+            if (Test-Path -Path ./deployFA.ps1) {
+              Write-Host "Script found. Executing..."
+              ./deployFA.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
+            } else {
+              Write-Host "Script not found at specified path."
+              # Handle error or provide instructions to locate the script
+            }
           azPSVersion: latest
