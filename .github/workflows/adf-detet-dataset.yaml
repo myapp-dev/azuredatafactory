@@ -1,5 +1,3 @@
-name: powershell-deployment
-
 on:
   push:
 permissions:
@@ -7,19 +5,30 @@ permissions:
       contents: read
 
 jobs:
-  deploy-adf-objects:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install Azure PowerShell
-        run: Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
-      - name: Install Azure Data Factory module
-        run: Install-Module -Name Az.DataFactory -Scope CurrentUser -Repository PSGallery -Force
+        with:
+          path: ./  # Checkout to the root directory
+
+      # Log into Azure
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-      - name: Deploy pipeline and dataset
-        run: |
-          azure-data-fatory/Template/script.ps1
+       
+      # Deploy ARM template and delete pipeline
+      - name: Deploy ARM Template and Delete Pipeline
+        uses: azure/arm-deploy@v1
+        with:
+          scope: resourcegroup
+          region: East US
+          resourceGroupName: ${{secrets.RESOURCE_GROUP}}
+          run: |
+            az module install --name azurerm
+            Remove-AzureRmDataFactoryPipeline -Force -Name "ds_raiscopy" -DataFactoryName "myappadf" -ResourceGroupName ${{secrets.RESOURCE_GROUP}}
+          parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQL_SOURCEUSERID}} sqlsourcePassword=${{secrets.SQL_SOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQL_SINKUSERID}} sqlsinkPassword=${{secrets.SQL_SINKPASSWORD}} sourceSqlServer=${{secrets.SQL_SOURCESERVER}} sinkSqlServer=${{secrets.SQL_SINKSERVER}}
