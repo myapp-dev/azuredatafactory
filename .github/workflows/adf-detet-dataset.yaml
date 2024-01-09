@@ -1,11 +1,11 @@
-name: Azure-data-migrationsS
+name: powershell-deployment
 
 on:
   push:
 
 permissions:
-    id-token: write
-    contents: read
+  id-token: write
+  contents: read
 
 jobs:
   build-and-deploy:
@@ -23,21 +23,12 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-       
-      # Deploy ARM template
-      - name: Deploy ARM Template
-        uses: azure/arm-deploy@v1
-        with:
-          scope: resourcegroup
-          region: East US
-          resourceGroupName: ${{secrets.RESOURCE_GROUP}}
-          #template: azure-data-fatory/Template/adf-copy.-working-code.bicep
-          #parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQL_SOURCEUSERID}} sqlsourcePassword=${{secrets.SQL_SOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQL_SINKUSERID}} sqlsinkPassword=${{secrets.SQL_SINKPASSWORD}} sourceSqlServer=${{secrets.SQL_SOURCESERVER}} sinkSqlServer=${{secrets.SQL_SINKSERVER}}
 
-      # Delete pipeline and data set
-      - name: Delete ADF Pipeline
+      - name: Set up Azure PowerShell
+        uses: azure/setup-powershell@v1
+        with:
+          azps-version: 'latest'
+
+      - name: Run PowerShell script
         run: |
-          az datafactory pipeline delete --name db_raiscopy --resource-group ${{secrets.RESOURCE_GROUP}} --factory-name myappadf
-          az datafactory dataset delete --name ds_azurcloud --resource-group ${{secrets.RESOURCE_GROUP}} --factory-name myappadf
-      
-          
+          azure-data-fatory/Template/script.ps1
