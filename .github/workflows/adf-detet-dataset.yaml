@@ -14,21 +14,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Azure PowerShell
-        uses: actions/setup-powershell@v2
-        with:
-          pwsh: 'latest'
-
-      - name: Execute PowerShell script
+      - name: Execute Azure CLI script with PowerShell
         run: |
           $DataFactoryName = "myappdev"
           $ResourceGroupName = "project-dev"
 
-          Write-Host "Deploying Azure Data Factory resources..."
+          echo "Deploying Azure Data Factory resources..."
 
-          ./azure-data-factory/Template/script.ps1
+          # Run PowerShell script using Azure VM run-command
+          az vm run-command invoke --command-id RunPowerShellScript --name YourVMName --resource-group project-dev --scripts ./azure-data-factory/Template/script.ps1
 
-          Write-Host "Deployment completed."
+          echo "Deployment completed."
 
       - name: Azure Login
         uses: azure/login@v1
