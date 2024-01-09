@@ -8,16 +8,16 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Setup Azure PowerShell
-        uses: azure/setup-powershell@v1.1.0
+        uses: actions/setup-powershell@v2
         with:
-          azPSVersion: 'latest'
+          pwsh: 'latest'
 
       - name: Execute PowerShell script
         run: |
