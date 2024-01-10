@@ -1,27 +1,44 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy Azure Function
+
+# Controls when the action will run. 
 on:
-  workflow_dispatch:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
 permissions:
-  id-token: write
-  contents: read
+    id-token: write
+    contents: read  
 
+env:
+  FUNCTION_NAME: 4besghactions2    # This name needs to be globally unique
+  SCRIPT_PATH: 'azure-data-fatory/scripts.ps1'      # set this to the path where your PowerShell code is stored.
+  RESOURCE_GROUP: project-app
+  LOCATION: 'East US'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: dev
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: ./  # Checkout to the root directory
+  # This workflow contains a single job called "build"
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
 
-      # Log into Azure
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true
 
-      # Delete dataset in Azure Data Factory
-      - name: Delete Dataset
-        run: |
-          az data factory dataset delete --resource-group ${{secrets.RESOURCE_GROUP}} --factory-name myappadf --name ds_azuresqldataset
+      # Deploy the Function
+      - name: Azure PowerShell Action 
+        uses: Azure/powershell@v1
+        with:
+          # Specify the Az PowerShell script here.
+          inlineScript: |
+            .\azure-data-factory/scripts.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
+          # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
+          azPSVersion: latest
