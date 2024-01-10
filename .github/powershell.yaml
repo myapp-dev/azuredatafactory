@@ -5,7 +5,7 @@ name: Deploy Azure Function
 
 on:
   
-  workflow_dispatch:
+push:
 permissions:
       id-token: write
       contents: read
