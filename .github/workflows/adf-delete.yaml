@@ -7,8 +7,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
 permissions:
-    id-token: write
-    contents: read  
+      id-token: write
+      contents: read  
 
 env:
   FUNCTION_NAME: 4besghactions2    # This name needs to be globally unique
@@ -30,7 +30,10 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{secrets.AZURE_CREDENTIALS}}
+          
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           enable-AzPSSession: true
 
       # Deploy the Function
