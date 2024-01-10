@@ -32,7 +32,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-          
+          enable-AzPSSession: true
 
       # Deploy the Function
       - name: Azure PowerShell Action 
@@ -43,4 +43,3 @@ jobs:
             .\azure-data-factory/scripts.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
           # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
           azPSVersion: latest
-          
