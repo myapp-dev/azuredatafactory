@@ -1,6 +1,6 @@
 // Define parameters for the script
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'db_raiscopy'
+param pipelineName string = 'xxxxx'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -27,19 +27,19 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_mysql'
-var linkedServiceSinkName = 'ds_muazuresql'
-var sourceDatasetName = 'ds_mysqlonprem'
-var sinkDatasetName = 'ds_myazurcloud'
-var dataFactoryName = 'myappadfa'
+var linkedServiceSourceName = 'ds_xxx'
+var linkedServiceSinkName = 'ds_xxxx'
+var sourceDatasetName = 'ds_mxxx'
+var sinkDatasetName = 'ds_xxx'
+var dataFactoryName = 'xxxx'
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
-var sourceDatabase = 'raisqadb'
+var sourceDatabase = 'xxxx'
 
 // Define variables for sink server and database
 var sinkServer = sinkSqlServer
-var sinkDatabase = 'futuraqa'
+var sinkDatabase = 'xxxx'
 
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
@@ -85,7 +85,7 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
-      table: 'welldata'
+      table: 'xxxx'
     }
   }
 }
@@ -104,7 +104,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
-      table: 'welldatacount'
+      table: 'xxxxx'
     }
   }
 }
