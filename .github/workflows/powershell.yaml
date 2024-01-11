@@ -29,5 +29,5 @@ jobs:
         uses: Azure/powershell@v1
         with:
           inlineScript: |
-            .\azure-data-factory/scripts.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
+            .\azure-data-factory/scripts.ps1  -ResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
           azPSVersion: latest
