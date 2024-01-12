@@ -1,7 +1,7 @@
 name: Delete-adf
 
 on:
-  workflow_dispatch:
+  push:
 
 env:
   FUNCTION_NAME: 4besghactions2  # This name needs to be globally unique
@@ -41,5 +41,5 @@ jobs:
         uses: Azure/powershell@v1
         with:
           inlineScript: |
-            .\azure-data-factory/Template/script.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
+            azure-data-factory/Template/script.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
           azPSVersion: latest
