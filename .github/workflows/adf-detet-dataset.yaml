@@ -14,8 +14,8 @@ permissions:
   contents: read
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  login-and-deploy:
+    runs-on: windows-latest
     environment:
       name: dev
     steps:
@@ -30,8 +30,13 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
-       
-      # Deploy the Function
+
+  deploy-function:
+    needs: login-and-deploy
+    runs-on: windows-latest
+    environment:
+      name: dev
+    steps:
       - name: Azure PowerShell Action
         uses: Azure/powershell@v1
         with:
