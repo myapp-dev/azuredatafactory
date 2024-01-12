@@ -1,7 +1,7 @@
 name: Azure-data-migrationsS
 
 on:
-   workflow_dispatch:
+   push:
 permissions:
     id-token: write
     contents: read
@@ -22,6 +22,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true
        
       # Deploy ARM template
       - name: Deploy ARM Template

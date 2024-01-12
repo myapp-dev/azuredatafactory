@@ -1,0 +1,55 @@
+{
+    $schema: https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#,
+    contentVersion: 1.0.0.0,
+    parameters: {
+        factoryName: {
+              value: dataFactoryName
+        },
+        TriggerRunState: {
+              value: Start
+        }
+        publicNetworkAccess: Enabled
+              identity: {
+                    type: SystemAssigned
+        }
+    }
+  }
+
+  typeProperties: {
+    recurrence: {
+      endTime: '2024-01-01T18:10:00Z' // Replace with your end time
+      frequency: 'Day' // Replace with your frequency (e.g., 'Day')
+      interval: 1 // Replace with your interval
+      schedule: {
+        hours: [
+          03 // Replace with your hours
+        ]
+        minutes: [
+          00// Replace with your minutes
+        ]
+        monthDays: [
+          1 // Replace with your month day
+        ]
+        monthlyOccurrences: [
+          {
+            day: 'Monday' // Replace with your day
+            occurrence: 1 // Replace with your occurrence
+          }
+        ]
+        weekDays: [
+          'Monday' // Replace with your week day
+        ]
+      }
+      startTime: '2024-01-01T18:00:00Z' // Replace with your start time
+      timeZone: 'IST' // Replace with your time zone
+    }
+  }
+}
+}
+//start publishing with ADF template
+//create adf template 
+
+
+
+
+

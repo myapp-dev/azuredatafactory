@@ -1,47 +1,63 @@
-# Install or update the Az module
-Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser -Repository PSGallery -Confirm:$false
+Param(
+    [Parameter(Mandatory=$true)]
+    [string] $ResourceGroupName,
 
-# Specify your Data Factory details
-$dataFactoryName = "myappadfa"
-$resourceGroupName = "project-dev"
-$apiVersion = '2018-06-01'  # Adjust the API version according to your requirements
+    [Parameter(Mandatory=$true)]
+    [string] $DataFactoryName
+)
 
-# Retrieve Data Factory details
-try {
-    $dataFactory = Get-AzDataFactory -ResourceGroupName $resourceGroupName -Name $dataFactoryName -ApiVersion $apiVersion
-} catch {
-    Write-Error "Failed to retrieve Data Factory: $($_.Exception.Message)"
-    exit
+# Use default values only if parameters are not provided
+if (-not $DataFactoryName) {
+    $DataFactoryName = "myappadfa"
 }
 
-# Delete datasets (without dependency checks)
-foreach ($dataset in $dataFactory.Datasets) {
-    try {
-        Remove-AzDataFactoryDataset -ResourceGroupName $resourceGroupName -DataFactoryName $dataFactoryName -Name $dataset.Name -ApiVersion $apiVersion
-        Write-Output "Deleted dataset: $($dataset.Name)"
-    } catch {
-        Write-Warning "Failed to delete dataset $($dataset.Name): $($_.Exception.Message)"
+if (-not $ResourceGroupName) {
+    $ResourceGroupName = "project-dev"
+}
+
+$artfTypes = "trigger", "pipeline", "dataflow", "dataset", "linkedService"
+
+function Remove-Artifacts {
+    param (
+        [Parameter(Mandatory=$true)]
+        [AllowEmptyCollection()]
+        [AllowNull()]
+        [System.Collections.ArrayList]$artifacts,
+
+        [Parameter(Mandatory=$true)]
+        [string]$artfType
+    )
+
+    if ($artifacts.Count -gt 0) {
+        [System.Collections.ArrayList]$artToProcess = New-Object System.Collections.ArrayList($null)
+
+        foreach ($artifact in $artifacts) {
+            try {
+                $removeAzDFCommand = "Remove-AzDataFactoryV2$($artfType) -DataFactoryName '$DataFactoryName' -ResourceGroupName '$ResourceGroupName' -Name '$($artifact.Name)' -Force -ErrorAction Stop"
+                Write-Host $removeAzDFCommand
+                Invoke-Expression $removeAzDFCommand
+            }
+            catch {
+                if ($_ -match '.*The document cannot be deleted since it is referenced by.*') {
+                    Write-Host $_
+                    $artToProcess.Add($artifact)
+                }
+                else {
+                    throw $_
+                }
+            }
+        }
+
+        Remove-Artifacts $artToProcess $artfType
     }
 }
 
-# Delete linked services (without dependency checks)
-foreach ($linkedService in $dataFactory.LinkedServices) {
-    try {
-        Remove-AzDataFactoryLinkedService -ResourceGroupName $resourceGroupName -DataFactoryName $dataFactoryName -Name $linkedService.Name -ApiVersion $apiVersion
-        Write-Output "Deleted linked service: $($linkedService.Name)"
-    } catch {
-        Write-Warning "Failed to delete linked service $($linkedService.Name): $($_.Exception.Message)"
-    }
-}
+foreach ($artfType in $artfTypes) {
+    $getAzDFCommand = "Get-AzDataFactoryV2$($artfType) -DataFactoryName '$DataFactoryName' -ResourceGroupName '$ResourceGroupName'"
+    Write-Output $getAzDFCommand
 
-# Delete pipelines (without dependency checks)
-foreach ($pipeline in $dataFactory.Pipelines) {
-    try {
-        Remove-AzDataFactoryPipeline -ResourceGroupName $resourceGroupName -DataFactoryName $dataFactoryName -Name $pipeline.Name -ApiVersion $apiVersion
-        Write-Output "Deleted pipeline: $($pipeline.Name)"
-    } catch {
-        Write-Warning "Failed to delete pipeline $($pipeline.Name): $($_.Exception.Message)"
-    }
-}
+    $artifacts = Invoke-Expression $getAzDFCommand
+    Write-Output $artifacts.Name
 
-Write-Output "Deletion process complete (no dependency checks performed)."
+    Remove-Artifacts $artifacts $artfType
+}

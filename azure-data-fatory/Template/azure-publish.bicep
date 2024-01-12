@@ -1,4 +1,4 @@
-// Define parameters for the script
+Define parameters for the script
 @description('Name of the pipeline for data copy activity.')
 param pipelineName string = 'xxxxx'
 
@@ -27,19 +27,19 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_raisgsgs'
-var linkedServiceSinkName = 'ds_futurabbbdb'
-var sourceDatasetName = 'ds_raiset'
-var sinkDatasetName = 'ds_futuraset'
-var dataFactoryName = 'myappadfa'
+var linkedServiceSourceName = 'ds_xxx'
+var linkedServiceSinkName = 'ds_xxxx'
+var sourceDatasetName = 'ds_mxxx'
+var sinkDatasetName = 'ds_xxx'
+var dataFactoryName = 'xxxx'
 
 // Define variables for source server and database
 var sourceServer = sourceSqlServer
-var sourceDatabase = 'welldata'
+var sourceDatabase = 'xxxx'
 
 // Define variables for sink server and database
 var sinkServer = sinkSqlServer
-var sinkDatabase = 'welldata'
+var sinkDatabase = 'xxxx'
 
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
@@ -85,7 +85,7 @@ resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
-      table: 'welldata'
+      table: 'xxxx'
     }
   }
 }
@@ -104,7 +104,7 @@ resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-0
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
-      table: 'welldata'
+      table: 'xxxxx'
     }
   }
 }
@@ -145,7 +145,8 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
             typeConversion: true
             typeConversionSettings: {
               allowDataTruncation: true
-              treatBooleanAsNumber: false
+
+treatBooleanAsNumber: false
             }
           }
         }
@@ -188,6 +189,37 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
         }
       }
     ]
+    //create ADF templates
+    {
+      scripts:{
+          build:node node_modules/@microsoft/azure-data-factory-utilities/lib/index
+      },
+      dependencies:{
+          @microsoft/azure-data-factory-utilities:^0.1.3
+      }
+    }
+    //define the publish_branch of the created data factories
+
+    {publishBranch:factory/adf_publish,includeFactoryTemplate:true}
+
+    //ARM Template definition for the factories
+    {
+      $schema: https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#,
+      contentVersion: 1.0.0.0,
+      parameters: {
+          factoryName: {
+                value: dataFactoryName
+          },
+          TriggerRunState: {
+                value: Start
+          }
+          publicNetworkAccess: Enabled
+                identity: {
+                      type: SystemAssigned
+          }
+      }
+    }
+
     typeProperties: {
       recurrence: {
         endTime: '2024-01-01T18:10:00Z' // Replace with your end time
@@ -219,4 +251,10 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
     }
   }
 }
+//start publishing with ADF template
+//create adf template 
+
+
+
+
 
