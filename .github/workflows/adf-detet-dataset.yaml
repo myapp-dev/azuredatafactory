@@ -1,7 +1,7 @@
 name: delete-adf-resource
 
 on:
-  workflow_dispatch:
+  push:
 permissions:
       id-token: write
       contents: read
