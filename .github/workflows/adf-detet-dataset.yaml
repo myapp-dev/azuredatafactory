@@ -1,32 +1,42 @@
-name: delete-adf-resource
+name: Azure-data-migrationsS
 
 on:
-  workflow_dispatch:
+  push:
+
+env:
+  FUNCTION_NAME: 4besghactions2  # This name needs to be globally unique
+  SCRIPT_PATH: 'azure-data-fatory/scripts.ps1'  # set this to the path where your PowerShell code is stored.
+  RESOURCE_GROUP: project-app
+  LOCATION: 'East US'
+   
 permissions:
-      id-token: write
-      contents: read
+  id-token: write
+  contents: read
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
+    environment:
+      name: dev
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./  # Checkout to the root directory
 
-      - name: Execute Azure CLI script with PowerShell
-        run: |
-          $DataFactoryName = "myappdev"
-          $ResourceGroupName = "project-dev"
-
-          echo "Deploying Azure Data Factory resources..."
-
-          # Run PowerShell script using Azure VM run-command
-          az vm run-command invoke --command-id RunPowerShellScript --name YourVMName --resource-group project-dev --scripts ./azure-data-factory/Template/script.ps1
-
-          echo "Deployment completed."
-
+      # Log into Azure
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true
+       
+      # Deploy the Function
+      - name: Azure PowerShell Action
+        uses: Azure/powershell@v1
+        with:
+          # Specify the Az PowerShell script here.
+          inlineScript: |
+            .\azure-data-factory/scripts.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
+          # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
+          azPSVersion: latest
