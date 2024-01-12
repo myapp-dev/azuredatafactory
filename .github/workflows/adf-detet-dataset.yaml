@@ -1,4 +1,4 @@
-name: Azure-data-migrationsS
+name: Delete-adf
 
 on:
   workflow_dispatch:
