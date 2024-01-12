@@ -1,55 +1,88 @@
 {
-    $schema: https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#,
-    contentVersion: 1.0.0.0,
-    parameters: {
-        factoryName: {
-              value: dataFactoryName
-        },
-        TriggerRunState: {
-              value: Start
-        }
-        publicNetworkAccess: Enabled
-              identity: {
-                    type: SystemAssigned
-        }
-    }
-  }
-
-  typeProperties: {
-    recurrence: {
-      endTime: '2024-01-01T18:10:00Z' // Replace with your end time
-      frequency: 'Day' // Replace with your frequency (e.g., 'Day')
-      interval: 1 // Replace with your interval
-      schedule: {
-        hours: [
-          03 // Replace with your hours
-        ]
-        minutes: [
-          00// Replace with your minutes
-        ]
-        monthDays: [
-          1 // Replace with your month day
-        ]
-        monthlyOccurrences: [
+  "name": "pipeline_rais_to_futura",
+  "properties": {
+      "activities": [
           {
-            day: 'Monday' // Replace with your day
-            occurrence: 1 // Replace with your occurrence
+              "name": "Copy data1",
+              "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                  "timeout": "0.12:00:00",
+                  "retry": 0,
+                  "retryIntervalInSeconds": 30,
+                  "secureOutput": false,
+                  "secureInput": false
+              },
+              "userProperties": [],
+              "typeProperties": {
+                  "source": {
+                      "type": "AzureSqlSource",
+                      "queryTimeout": "02:00:00",
+                      "partitionOption": "None"
+                  },
+                  "sink": {
+                      "type": "AzureSqlSink",
+                      "writeBehavior": "insert",
+                      "sqlWriterUseTableLock": false,
+                      "tableOption": "autoCreate",
+                      "disableMetricsCollection": false
+                  },
+                  "enableStaging": false,
+                  "translator": {
+                      "type": "TabularTranslator",
+                      "typeConversion": true,
+                      "typeConversionSettings": {
+                          "allowDataTruncation": true,
+                          "treatBooleanAsNumber": false
+                      }
+                  }
+              },
+              "inputs": [
+                  {
+                      "referenceName": "ds_raisonprem",
+                      "type": "DatasetReference"
+                  }
+              ],
+              "outputs": [
+                  {
+                      "referenceName": "ds_futura",
+                      "type": "DatasetReference"
+                  }
+              ]
           }
-        ]
-        weekDays: [
-          'Monday' // Replace with your week day
-        ]
-      }
-      startTime: '2024-01-01T18:00:00Z' // Replace with your start time
-      timeZone: 'IST' // Replace with your time zone
-    }
+      ],
+      "annotations": []
   }
 }
+{
+  "name": "dialy_trigger_rais_to_futura",
+  "properties": {
+      "annotations": [],
+      "runtimeState": "Started",
+      "pipelines": [
+          {
+              "pipelineReference": {
+                  "referenceName": "pipeline_rais_to_futura",
+                  "type": "PipelineReference"
+              }
+          }
+      ],
+      "type": "ScheduleTrigger",
+      "typeProperties": {
+          "recurrence": {
+              "frequency": "Day",
+              "interval": 1,
+              "startTime": "2024-01-12T00:52:00",
+              "timeZone": "India Standard Time",
+              "schedule": {
+                  "minutes": [
+                      52
+                  ],
+                  "hours": [
+                      12
+                  ]
+              }
+          }
+      }
+  }
 }
-//start publishing with ADF template
-//create adf template 
-
-
-
-
-

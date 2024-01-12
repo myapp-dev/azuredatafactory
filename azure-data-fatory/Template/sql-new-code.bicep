@@ -27,10 +27,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais_sql_ojjjnprem'
-var linkedServiceSinkName = 'ds_futura_cloujjjd'
-var sourceDatasetName = 'ds_raiset_sdddql'
-var sinkDatasetName = 'ds_futura_clouddd'
+var linkedServiceSourceName = 'ds_rais_sql_onprem'
+var linkedServiceSinkName = 'ds_futura_cloud'
+var sourceDatasetName = 'ds_raiset_sql'
+var sinkDatasetName = 'ds_futura_cloud'
 var dataFactoryName = 'myappadfa'
 
 // Define variables for source server and database
@@ -72,50 +72,51 @@ resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedser
   }
 }
 
-// Define dataset for the source
-resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+
+
+resource ds_raisonprem 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   parent: dataFactory
   name: sourceDatasetName
   properties: {
     linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSource.name
+      referenceName: 'ds_mysql'
       type: 'LinkedServiceReference'
     }
     annotations: []
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
+      schema: 'dbo'
       table: 'rig_master'
     }
   }
 }
 
-// Define dataset for the sink
-resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
+resource ds_futura 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   parent: dataFactory
   name: sinkDatasetName
-
   properties: {
     linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSink.name
+      referenceName: 'ds_muazuresql'
       type: 'LinkedServiceReference'
     }
     annotations: []
     type: 'AzureSqlTable'
     schema: []
     typeProperties: {
-      table: 'rig_master'
+      schema: 'dbo'
+      table: 'rais_master'
     }
   }
 }
 
-resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
+resource futura_dev 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   parent: dataFactory
   name: pipelineName
   properties: {
     activities: [
       {
-        name: 'Copy data'
+        name: 'Copy data1'
         type: 'Copy'
         dependsOn: []
         policy: {
@@ -151,43 +152,37 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
         }
         inputs: [
           {
-            referenceName: dataFactorySourceDataset.name
+            referenceName: 'rais_dev'
             type: 'DatasetReference'
-            parameters: {}
           }
         ]
         outputs: [
           {
-            referenceName: dataFactorySinkDataset.name
+            referenceName: 'futura_dev'
             type: 'DatasetReference'
-            parameters: {}
           }
         ]
       }
     ]
-    policy: {
-      elapsedTimeMetric: {}
-    }
     annotations: []
+    lastPublishTime: '2024-01-12T20:10:51Z'
   }
-
 }
 
-resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'raisfuturatrigger'
-  parent: dataFactory
+resource dev_trigger 'Microsoft.DataFactory/factories/triggers@2021-06-01-preview' = {
+  name: 'dev_trigger'
   properties: {
-    type: 'ScheduleTrigger'
+    annotations: []
+    runtimeState: 'Started'
     pipelines: [
       {
-        parameters: {}
         pipelineReference: {
-          name: pipeline.name
-          referenceName: pipeline.name
+          referenceName: 'futura_dev'
           type: 'PipelineReference'
         }
       }
     ]
+    type: 'ScheduleTrigger'
     typeProperties: {
       recurrence: {
         frequency: 'Day'
@@ -195,11 +190,10 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
         startTime: '2024-01-12T01:37:00'
         timeZone: 'India Standard Time'
         schedule: {
-          minutes: [02]
-          hours: [2]
+          minutes: [43]
+          hours: [1]
         }
       }
     }
   }
 }
-
