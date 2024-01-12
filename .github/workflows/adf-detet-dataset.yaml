@@ -1,7 +1,7 @@
 name: Azure-data-migrationsS
 
 on:
-  push:
+  workflow_dispatch:
 
 env:
   FUNCTION_NAME: 4besghactions2  # This name needs to be globally unique
