@@ -29,7 +29,7 @@ param sinkSqlServer string
 // Define variable names for clarity
 var linkedServiceSourceName = 'ds_rais_sql_ojjjnprem'
 var linkedServiceSinkName = 'ds_futura_cloujjjd'
-var sourceDatasetName = 'ds_raiset_sddd ql'
+var sourceDatasetName = 'ds_raiset_sdddql'
 var sinkDatasetName = 'ds_futura_clouddd'
 var dataFactoryName = 'myappadfa'
 
