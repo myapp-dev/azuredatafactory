@@ -38,8 +38,8 @@ var sourceServer = sourceSqlServer
 var sourceDatabase = 'rig_master'
 
 // Define variables for sink server and database
-var sinkServer = sinkSqlServer
-var sinkDatabase = 'rig_master'
+var sinkServer = 'futuraqa'
+var sinkDatabase = 'futuraqa'
 
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
@@ -193,10 +193,10 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
       recurrence: {
         frequency: 'Day'
         interval: 1
-        startTime: '2024-01-12T01:37:00'
+        startTime: '2024-01-12T07:36:00'
         timeZone: 'India Standard Time'
         schedule: {
-          minutes: [24]
+          minutes: [36]
           hours: [7]
         }
       }
