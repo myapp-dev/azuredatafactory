@@ -178,24 +178,26 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
   parent: dataFactory
   properties: {
     annotations: []
+    type: 'ScheduleTrigger'
     pipelines: [
       {
+        parameters: {}
         pipelineReference: {
-          referenceName: 'ds_rais'
+          name: pipeline.name
+          referenceName: pipeline.name
           type: 'PipelineReference'
         }
       }
     ]
-    type: 'ScheduleTrigger'
     typeProperties: {
       recurrence: {
         frequency: 'Day'
         interval: 1
-        startTime: '2024-01-12T09:14:00'
+        startTime: '2024-01-12T09:18:00'
         timeZone: 'India Standard Time'
         schedule: {
           minutes: [
-            14
+            18
           ]
           hours: [
             9
