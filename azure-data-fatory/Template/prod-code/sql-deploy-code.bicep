@@ -46,68 +46,26 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: dataFactoryName
 }
 
-// Define linked service for the source (SQL Server)
-resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  parent: dataFactory
+resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: linkedServiceSourceName
-  properties: {
-    type: 'AzureSqlDatabase'
-    typeProperties: {
-      // Use variables for sourceServer and sourceDatabase
-      connectionString: 'Server=${sourceServer};Database=${sourceDatabase};User Id=${sqlsourceUserId};Password=${sqlsourcePassword};'
-    }
-  }
 }
 
-// Define linked service for the sink (Azure SQL Database)
-resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  parent: dataFactory
+resource dataFactoryLinkedServiceSink  'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: linkedServiceSinkName
-  properties: {
-    type: 'AzureSqlDatabase'
-    typeProperties: {
-      // Use variables for sinkServer and sinkDatabase
-      connectionString: 'Server=${sinkServer};Database=${sinkDatabase};User Id=${sqlsinkUserId};Password=${sqlsinkPassword};'
-    }
-  }
 }
 
-// Define dataset for the source
-resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
-  parent: dataFactory
+
+resource dataFactorySourceDataset 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: sourceDatasetName
-  properties: {
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSource.name
-      type: 'LinkedServiceReference'
-    }
-    annotations: []
-    type: 'AzureSqlTable'
-    schema: []
-    typeProperties: {
-      table: 'rig_master'
-    }
-  }
 }
 
-// Define dataset for the sink
-resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
-  parent: dataFactory
+resource dataFactorySinkDataset 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: sinkDatasetName
-
-  properties: {
-    linkedServiceName: {
-      referenceName: dataFactoryLinkedServiceSink.name
-      type: 'LinkedServiceReference'
-    }
-    annotations: []
-    type: 'AzureSqlTable'
-    schema: []
-    typeProperties: {
-      table: 'rig_master'
-    }
-  }
 }
+
+
+
+
 
 resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   parent: dataFactory
@@ -193,11 +151,11 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
       recurrence: {
         frequency: 'Day'
         interval: 1
-        startTime: '2024-01-12T09:51:00'
+        startTime: '2024-01-12T09:18:00'
         timeZone: 'India Standard Time'
         schedule: {
           minutes: [
-            51
+            18
           ]
           hours: [
             9
