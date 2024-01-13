@@ -174,7 +174,7 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
 }
 
 resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'raistrigger'
+  name: 'futuratrigger'
   parent: dataFactory
   properties: {
     annotations: []
@@ -193,11 +193,11 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
       recurrence: {
         frequency: 'Day'
         interval: 1
-        startTime: '2024-01-12T09:51:00'
+        startTime: '2024-01-12T09:58:00'
         timeZone: 'India Standard Time'
         schedule: {
           minutes: [
-            51
+            58
           ]
           hours: [
             9

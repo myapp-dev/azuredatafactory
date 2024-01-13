@@ -2,70 +2,37 @@
 @description('Name of the pipeline for data copy activity.')
 param pipelineName string = 'ds_rais'
 
-@description('User Id for the source SQL Server.')
-@secure()
-param sqlsourceUserId string
 
-@description('Password for the source SQL Server.')
-@secure()
-param sqlsourcePassword string
 
-@description('User Id for the sink Azure SQL Database.')
-@secure()
-param sqlsinkUserId string
-
-@description('Password for the sink Azure SQL Database.')
-@secure()
-param sqlsinkPassword string
-
-@description('Server for the source SQL Server.')
-@secure()
-param sourceSqlServer string
-
-@description('Server for the sink Azure SQL Database.')
-@secure()
-param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais_sql_'
+var linkedServiceSourceName = 'ds_rais_sql'
 var linkedServiceSinkName = 'ds_futura_cloud'
 var sourceDatasetName = 'ds_raiset_sql'
 var sinkDatasetName = 'ds_futura_cloud'
 var dataFactoryName = 'myappadfa'
-
-// Define variables for source server and database
-var sourceServer = sourceSqlServer
-var sourceDatabase = 'raisqadb'
-
-// Define variables for sink server and database
-var sinkServer = sinkSqlServer
-var sinkDatabase = 'futuraqa'
 
 // Defining existing ADF
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' existing = {
   name: dataFactoryName
 }
 
-resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories@2018-06-01' existing = {
+resource dataFactoryLinkedServiceSource 'Microsoft.DataFactory/factories/linkedServices@2018-06-01' existing = {
+  parent: dataFactory
   name: linkedServiceSourceName
 }
 
-resource dataFactoryLinkedServiceSink  'Microsoft.DataFactory/factories@2018-06-01' existing = {
+resource dataFactoryLinkedServiceSink 'Microsoft.DataFactory/factories/linkedServices@2018-06-01' existing = {
   name: linkedServiceSinkName
 }
 
-
-resource dataFactorySourceDataset 'Microsoft.DataFactory/factories@2018-06-01' existing = {
+resource dataFactorySourceDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' existing = {
   name: sourceDatasetName
 }
 
-resource dataFactorySinkDataset 'Microsoft.DataFactory/factories@2018-06-01' existing = {
+resource dataFactorySinkDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' existing = {
   name: sinkDatasetName
 }
-
-
-
-
 
 resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   parent: dataFactory
@@ -128,7 +95,6 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
     }
     annotations: []
   }
-
 }
 
 resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
@@ -165,7 +131,3 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
     }
   }
 }
-
-
-
-
