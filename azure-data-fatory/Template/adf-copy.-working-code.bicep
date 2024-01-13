@@ -1,6 +1,6 @@
 // Define parameters for the script
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'ds_rais_to_futura'
+param pipelineName string = 'ds_rais'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -174,14 +174,14 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
 }
 
 resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'Daily_rais_trigger'
+  name: 'raistrigger'
   parent: dataFactory
   properties: {
     annotations: []
     pipelines: [
       {
         pipelineReference: {
-          referenceName: 'ds_rais_to_futura'
+          referenceName: 'ds_rais'
           type: 'PipelineReference'
         }
       }
@@ -191,11 +191,11 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
       recurrence: {
         frequency: 'Day'
         interval: 1
-        startTime: '2024-01-12T09:10:00'
+        startTime: '2024-01-12T09:14:00'
         timeZone: 'India Standard Time'
         schedule: {
           minutes: [
-            10
+            14
           ]
           hours: [
             9
