@@ -101,3 +101,34 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
     dataset2
   ]
 }
+
+resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
+  name: 'raisfuturatrigger'
+  parent: dataFactory
+  properties: {
+    annotations: []
+    type: 'ScheduleTrigger'
+    pipelines: [
+      {
+        parameters: {}
+        pipelineReference: {
+          name: pipeline.name
+          referenceName: pipeline.name
+          type: 'PipelineReference'
+        }
+      }
+    ]
+    typeProperties: {
+      recurrence: {
+        frequency: 'Day'
+        interval: 1
+        startTime: '2024-01-12T01:41:00'
+        timeZone: 'India Standard Time'
+        schedule: {
+          minutes: [41]
+          hours: [7]
+        }
+      }
+    }
+  }
+}

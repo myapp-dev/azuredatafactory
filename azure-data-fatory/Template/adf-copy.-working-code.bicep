@@ -27,10 +27,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_rais_sql_ojjjnprem'
-var linkedServiceSinkName = 'ds_futura_cloujjjd'
-var sourceDatasetName = 'ds_raiset_sdddql'
-var sinkDatasetName = 'ds_futura_clouddd'
+var linkedServiceSourceName = 'ds_rais_sql_'
+var linkedServiceSinkName = 'ds_futura_cloud'
+var sourceDatasetName = 'ds_raiset_sql'
+var sinkDatasetName = 'ds_futura_cloud'
 var dataFactoryName = 'myappadfa'
 
 // Define variables for source server and database
@@ -174,35 +174,38 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
 }
 
 resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'raisfuturatrigger'
+  name: 'Daily_rais_trigger'
   parent: dataFactory
   properties: {
     annotations: []
-    type: 'ScheduleTrigger'
     pipelines: [
       {
-        parameters: {}
         pipelineReference: {
-          name: pipeline.name
-          referenceName: pipeline.name
+          referenceName: 'ds_rais_to_futura'
           type: 'PipelineReference'
         }
       }
     ]
+    type: 'ScheduleTrigger'
     typeProperties: {
       recurrence: {
         frequency: 'Day'
         interval: 1
-        startTime: '2024-01-12T01:41:00'
+        startTime: '2024-01-12T09:10:00'
         timeZone: 'India Standard Time'
         schedule: {
-          minutes: [41]
-          hours: [7]
+          minutes: [
+            10
+          ]
+          hours: [
+            9
+          ]
         }
       }
     }
   }
 }
+
 
 
 
