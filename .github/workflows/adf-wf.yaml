@@ -5,6 +5,8 @@ on:
 
 env:
   SCRIPT_PATH: 'azure-data-factory/Template/script.ps1'
+  RESOURCE_GROUP: 'project-dev'
+  LOCATION: 'East US'
 
 permissions:
   id-token: write
@@ -31,7 +33,6 @@ jobs:
         uses: azure/powershell@v1
         with:
           inlineScript: |
-            # Content of your SetTriggers.ps1 script
             param(
                 [string]$DataFactoryName,
                 [string]$DataFactoryResourceGroup,
@@ -48,4 +49,7 @@ jobs:
             $EnabledTriggers = 'daily_trigger'
 
             .\$(env:SCRIPT_PATH) -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
-            azPSVersion: latest 
+          azPSVersion: latest
+          errorActionPreference: Stop
+          failOnStandardError: false
+          
