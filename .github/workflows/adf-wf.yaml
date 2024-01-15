@@ -33,14 +33,6 @@ jobs:
         uses: azure/powershell@v1
         with:
           inlineScript: |
-            param(
-                [string]$DataFactoryName,
-                [string]$DataFactoryResourceGroup,
-                [string]$DataFactorySubscriptionId,
-                [bool]$DisableAllTriggers,
-                [string]$EnabledTriggers
-            )
-
             # Set your parameters
             $DataFactoryName = 'myappadfa'
             $DataFactoryResourceGroup = 'project-dev'
