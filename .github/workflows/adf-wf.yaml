@@ -1,16 +1,14 @@
 name: pwsh-trigger
 
 on:
-   push:
+  push:
 
 env:
-  SCRIPT_PATH: 'azure-data-fatory/Template/script.ps1'
-  RESOURCE_GROUP: 'project-dev'
-  LOCATION: 'East US'
+  SCRIPT_PATH: 'azure-data-factory/Template/script.ps1'
 
 permissions:
-    id-token: write
-    contents: read
+  id-token: write
+  contents: read
 
 jobs:
   build-and-deploy:
@@ -23,16 +21,30 @@ jobs:
         with:
           path: ./  # Checkout to the root directory
 
-      # Log into Azure
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
        
-      - name: Run PowerShell Script
-        uses: Azure/powershell@v1
+      - name: Enable certain triggers and disable rest
+        uses: azure/powershell@v1
         with:
           inlineScript: |
-            .\${{ env.SCRIPT_PATH }} -ResourceGroupName ${{ env.RESOURCE_GROUP }} -dataFactoryName 'myappadfa'
-          azPSVersion: latest
+            # Content of your SetTriggers.ps1 script
+            param(
+                [string]$DataFactoryName,
+                [string]$DataFactoryResourceGroup,
+                [string]$DataFactorySubscriptionId,
+                [bool]$DisableAllTriggers,
+                [string]$EnabledTriggers
+            )
+
+            # Set your parameters
+            $DataFactoryName = 'myappadfa'
+            $DataFactoryResourceGroup = 'project-dev'
+            $DataFactorySubscriptionId = '6cdd51be-69f2-4db8-ace0-61086685ec5c'
+            $DisableAllTriggers = $true
+            $EnabledTriggers = 'daily_trigger'
+
+            .\$(env:SCRIPT_PATH) -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
