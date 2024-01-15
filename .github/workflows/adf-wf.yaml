@@ -1,7 +1,12 @@
+ 
+
+
 name: pwsh-trigger
 
 on:
   push:
+    branches:
+      - main  # Specify the branch for which the workflow should trigger
 
 jobs:
   build-and-deploy:
@@ -31,12 +36,10 @@ jobs:
             $DisableAllTriggers = $true
             $EnabledTriggers = 'daily_trigger'
 
+            # Correct the path to the script and use the correct parameters
+            .\azure-data-factory\Template\script.ps1  $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+
           shell: pwsh
-          run: |
-            .\azure-data-factory\Template\script.ps1 
           azPSVersion: latest
           errorActionPreference: Stop
           failOnStandardError: false
-
-            
-          
