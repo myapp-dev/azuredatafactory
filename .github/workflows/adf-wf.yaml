@@ -48,3 +48,4 @@ jobs:
             $EnabledTriggers = 'daily_trigger'
 
             .\$(env:SCRIPT_PATH) -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+            azPSVersion: latest 
