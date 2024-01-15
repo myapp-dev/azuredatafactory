@@ -1,44 +1,45 @@
- 
-
-
-name: pwsh-trigger tests
+name: Deploy Data Factory
 
 on:
   push:
-    
-
+permissions:
+    id-token: write
+    contents: read
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: windows-latest
-    environment:
-      name: dev
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: ./  # Checkout to the root directory
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{secrets.AZURE_CREDENTIALS}}
-          enable-AzPSSession: true
+    - name: Set up Azure PowerShell
+      uses: azure/setup-powershell@v1
+      with:
+        az-version: 'latest'
 
-      - name: Enable certain triggers and disable rest
-        uses: azure/powershell@v1
-        with:
-          inlineScript: |
-            # Set your parameters
-            $DataFactoryName = 'myappadfa'
-            $DataFactoryResourceGroup = 'project-dev'
-            $DataFactorySubscriptionId = '6cdd51be-69f2-4db8-ace0-61086685ec5c'
-            $DisableAllTriggers = $true
-            $EnabledTriggers = 'daily_trigger'
+    - name: Run PowerShell script
+      id: deploy
+      run: |
+        $ErrorActionPreference = "Stop"
 
-            # Correct the path to the script and use the correct parameters
-            .\azure-data-factory\Template\script.ps1  $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+        # Define parameters
+        $DataFactoryName = ${{ secrets.DATA_FACTORY_NAME }}
+        $DataFactoryResourceGroup = ${{ secrets.DATA_FACTORY_RESOURCE_GROUP }}
+        $DataFactorySubscriptionId = ${{ secrets.DATA_FACTORY_SUBSCRIPTION_ID }}
+        $DisableAllTriggers = ${{ secrets.DISABLE_ALL_TRIGGERS }}
+        $EnabledTriggers = ${{ secrets.ENABLED_TRIGGERS }}
 
-          shell: pwsh
-          azPSVersion: latest
-          errorActionPreference: Stop
-          failOnStandardError: false
+        # Add other required secrets here...
+
+        # Rest of the PowerShell script (assuming the script is in the root directory)
+        .\your_script.ps1 -DataFactoryName $DataFactoryName `
+                           -DataFactoryResourceGroup $DataFactoryResourceGroup `
+                           -DataFactorySubscriptionId $DataFactorySubscriptionId `
+                           -DisableAllTriggers $DisableAllTriggers `
+                           -EnabledTriggers $EnabledTriggers
+
+    - name: Display script output
+      run: |
+        echo "${{ steps.deploy.outputs.stdout }}"
+        echo "${{ steps.deploy.outputs.stderr }}"
