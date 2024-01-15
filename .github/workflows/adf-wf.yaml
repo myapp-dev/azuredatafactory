@@ -1,12 +1,11 @@
  
 
 
-name: pwsh-trigger
+name: pwsh-trigger tests
 
 on:
   push:
-    branches:
-      - main  # Specify the branch for which the workflow should trigger
+    
 
 jobs:
   build-and-deploy:
