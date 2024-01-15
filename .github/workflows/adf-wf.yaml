@@ -19,7 +19,7 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
-       
+
       - name: Enable certain triggers and disable rest
         uses: azure/powershell@v1
         with:
@@ -30,9 +30,12 @@ jobs:
             $DataFactorySubscriptionId = '6cdd51be-69f2-4db8-ace0-61086685ec5c'
             $DisableAllTriggers = $true
             $EnabledTriggers = 'daily_trigger'
-            
-            ./azure-data-factory\Template\script.ps1 -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+
+            # Load the module first
+            Import-Module -Name .\azure-data-factory\Template
+
+            # Invoke the script using the full path
+            .\azure-data-factory\Template\script.ps1 -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
           azPSVersion: latest
           errorActionPreference: Stop
           failOnStandardError: false
-          
