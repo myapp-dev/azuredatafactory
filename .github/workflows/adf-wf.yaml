@@ -40,8 +40,9 @@ jobs:
             $DisableAllTriggers = $true
             $EnabledTriggers = 'daily_trigger'
 
-            .\$(env:SCRIPT_PATH) -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+            # Invoke the script without .\
+            ./$env:SCRIPT_PATH -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
           azPSVersion: latest
           errorActionPreference: Stop
           failOnStandardError: false
-          
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
