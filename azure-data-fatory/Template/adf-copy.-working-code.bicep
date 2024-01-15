@@ -115,7 +115,7 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   properties: {
     activities: [
       {
-        name: 'raistofutura '
+        name: 'raistofutura'
         type: 'Copy'
         dependsOn: []
         policy: {
@@ -170,7 +170,6 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
     }
     annotations: []
   }
-
 }
 
 resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
@@ -196,7 +195,7 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
         startTime: '2024-01-12T22:00:00'
         timeZone: 'India Standard Time'
         schedule: {
-          minutes: [00]
+          minutes: [24]
           hours: [22]
         }
       }
