@@ -32,7 +32,7 @@ jobs:
             $EnabledTriggers = 'daily_trigger'
 
             # Use the full path to the script file
-            ./azure-data-factory\Template\script.ps1" -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+            ./azure-data-factory\Template\script.ps1 -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
           azPSVersion: latest
           errorActionPreference: Stop
           failOnStandardError: false
