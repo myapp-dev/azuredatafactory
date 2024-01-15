@@ -1,7 +1,7 @@
 name: pwsh-trigger-start
 
 on:
-  push:
+  workflow_dispatch:
 
 
 env:
