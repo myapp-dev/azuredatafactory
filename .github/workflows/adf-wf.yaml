@@ -31,11 +31,12 @@ jobs:
             $DisableAllTriggers = $true
             $EnabledTriggers = 'daily_trigger'
 
-            # Load the module first
-            Import-Module -Name .\azure-data-factory\Template
-
-            # Invoke the script using the full path
-            .\azure-data-factory\Template\script.ps1 -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+          shell: pwsh
+          run: |
+            .\azure-data-factory\Template\script.ps1 
           azPSVersion: latest
           errorActionPreference: Stop
           failOnStandardError: false
+
+            
+          
