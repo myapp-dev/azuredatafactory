@@ -3,15 +3,6 @@ name: pwsh-trigger
 on:
   push:
 
-env:
-  SCRIPT_PATH: 'azure-data-factory/Template/script.ps1'
-  RESOURCE_GROUP: 'project-dev'
-  LOCATION: 'East US'
-
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   build-and-deploy:
     runs-on: windows-latest
@@ -40,9 +31,9 @@ jobs:
             $DisableAllTriggers = $true
             $EnabledTriggers = 'daily_trigger'
 
-            # Invoke the script without .\
-            ./$env:SCRIPT_PATH -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
+            # Invoke the script using the direct file path
+            & "./azure-data-factory/Template/script.ps1" -DataFactoryName $DataFactoryName -DataFactoryResourceGroup $DataFactoryResourceGroup -DataFactorySubscriptionId $DataFactorySubscriptionId -DisableAllTriggers $DisableAllTriggers -EnabledTriggers $EnabledTriggers
           azPSVersion: latest
           errorActionPreference: Stop
           failOnStandardError: false
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          
