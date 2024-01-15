@@ -4,7 +4,7 @@ on:
    push:
 
 env:
-  SCRIPT_PATH: 'azure-data-fatory/Template/script.ps2'
+  SCRIPT_PATH: 'azure-data-fatory/Template/script.ps1'
   RESOURCE_GROUP: 'project-dev'
   LOCATION: 'East US'
 
