@@ -1,88 +1,95 @@
 {
-  "name": "pipeline_rais_to_futura",
-  "properties": {
-      "activities": [
-          {
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+      {
+        "name": "pipeline_rais_to_futura",
+        "type": "Microsoft.DataFactory/factories/pipelines",
+        "apiVersion": "2018-06-01",
+        "properties": {
+          "activities": [
+            {
               "name": "Copy data1",
               "type": "Copy",
               "dependsOn": [],
               "policy": {
-                  "timeout": "0.12:00:00",
-                  "retry": 0,
-                  "retryIntervalInSeconds": 30,
-                  "secureOutput": false,
-                  "secureInput": false
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureOutput": false,
+                "secureInput": false
               },
               "userProperties": [],
               "typeProperties": {
-                  "source": {
-                      "type": "AzureSqlSource",
-                      "queryTimeout": "02:00:00",
-                      "partitionOption": "None"
-                  },
-                  "sink": {
-                      "type": "AzureSqlSink",
-                      "writeBehavior": "insert",
-                      "sqlWriterUseTableLock": false,
-                      "tableOption": "autoCreate",
-                      "disableMetricsCollection": false
-                  },
-                  "enableStaging": false,
-                  "translator": {
-                      "type": "TabularTranslator",
-                      "typeConversion": true,
-                      "typeConversionSettings": {
-                          "allowDataTruncation": true,
-                          "treatBooleanAsNumber": false
-                      }
+                "source": {
+                  "type": "AzureSqlSource",
+                  "queryTimeout": "02:00:00",
+                  "partitionOption": "None"
+                },
+                "sink": {
+                  "type": "AzureSqlSink",
+                  "writeBehavior": "insert",
+                  "sqlWriterUseTableLock": false,
+                  "tableOption": "autoCreate",
+                  "disableMetricsCollection": false
+                },
+                "enableStaging": false,
+                "translator": {
+                  "type": "TabularTranslator",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
                   }
+                }
               },
               "inputs": [
-                  {
-                      "referenceName": "ds_raisonprem",
-                      "type": "DatasetReference"
-                  }
+                {
+                  "referenceName": "ds_raisonprem",
+                  "type": "DatasetReference"
+                }
               ],
               "outputs": [
-                  {
-                      "referenceName": "ds_futura",
-                      "type": "DatasetReference"
-                  }
+                {
+                  "referenceName": "ds_futura",
+                  "type": "DatasetReference"
+                }
               ]
-          }
-      ],
-      "annotations": []
-  }
-}
-{
-  "name": "dialy_trigger_rais_to_futura",
-  "properties": {
-      "annotations": [],
-      "runtimeState": "Started",
-      "pipelines": [
-          {
+            }
+          ],
+          "annotations": []
+        }
+      },
+      {
+        "name": "dialy_trigger_rais_to_futura",
+        "type": "Microsoft.DataFactory/factories/triggers",
+        "apiVersion": "2018-06-01",
+        "properties": {
+          "annotations": [],
+          "runtimeState": "Started",
+          "pipelines": [
+            {
               "pipelineReference": {
-                  "referenceName": "pipeline_rais_to_futura",
-                  "type": "PipelineReference"
+                "referenceName": "pipeline_rais_to_futura",
+                "type": "PipelineReference"
               }
-          }
-      ],
-      "type": "ScheduleTrigger",
-      "typeProperties": {
-          "recurrence": {
+            }
+          ],
+          "type": "ScheduleTrigger",
+          "typeProperties": {
+            "recurrence": {
               "frequency": "Day",
               "interval": 1,
               "startTime": "2024-01-12T00:52:00",
               "timeZone": "India Standard Time",
               "schedule": {
-                  "minutes": [
-                      52
-                  ],
-                  "hours": [
-                      12
-                  ]
+                "minutes": [52],
+                "hours": [12]
               }
+            }
           }
+        }
       }
+    ]
   }
-}
+  
