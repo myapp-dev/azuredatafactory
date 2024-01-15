@@ -1,32 +1,25 @@
-# This is a basic workflow to help you get started with Actions
+name: pwsh-trigger-start
 
-name: Deploy Azure Function
-
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  workflow_dispatch:
-permissions:
-      id-token: write
-      contents: read
+  push:
+
 
 env:
-  FUNCTION_NAME: 4besghactions2  # This name needs to be globally unique
-  SCRIPT_PATH: 'azure-data-fatory/scripts.ps1'  # set this to the path where your PowerShell code is stored.
-  RESOURCE_GROUP: project-app
+  SCRIPT_PATH: 'azure-data-fatory/Template/script.ps2'
+  RESOURCE_GROUP: 'project-dev'
   LOCATION: 'East US'
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+permissions:
+      id-token: write
+      contents: read  
+
 jobs:
-  # This workflow contains a single job called "deploy"
   deploy:
-    # The type of runner that the job will run on
     runs-on: windows-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
       - name: Azure Login
         uses: azure/login@v1
@@ -34,12 +27,9 @@ jobs:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
 
-      # Deploy the Function
-      - name: Azure PowerShell Action
+      - name: Run PowerShell Script
         uses: Azure/powershell@v1
         with:
-          # Specify the Az PowerShell script here.
           inlineScript: |
-            .\azure-data-factory/scripts.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
-          # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
+            .\${{ env.SCRIPT_PATH }} -ResourceGroupName ${{ env.RESOURCE_GROUP }} -dataFactoryName 'myappadfa'
           azPSVersion: latest
