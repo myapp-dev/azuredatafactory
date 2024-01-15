@@ -34,7 +34,7 @@ jobs:
           $DataFactoryResourceGroup = ${{ secrets.DATA_FACTORY_RESOURCE_GROUP }}
           $DataFactorySubscriptionId = ${{ secrets.DATA_FACTORY_SUBSCRIPTION_ID }}
           $DisableAllTriggers = ${{ secrets.DISABLE_ALL_TRIGGERS }}
-          $EnabledTriggers = ${{ secrets.ENABLED_TRIGGERS }}
+          $EnabledTriggers = ${"daily_trigger"}
 
           # Add other required secrets here...
 
