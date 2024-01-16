@@ -34,5 +34,5 @@ jobs:
 
             # Stop each trigger
             foreach ($name in $names) {
-                az datafactory trigger start --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
+                az datafactory trigger stop --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
             }
