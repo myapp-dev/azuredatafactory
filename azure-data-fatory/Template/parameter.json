@@ -3,12 +3,12 @@
     "contentVersion": "1.0.0.0",
     "resources": [
         {
-            "name": "daily_trigger",
-            "type": 'Microsoft.DataFactory/factories/triggers',
+            "type": "Microsoft.DataFactory/factories/triggers",
             "apiVersion": "2018-06-01",
+            "name": "daily_trigger",
             "properties": {
                 "annotations": [],
-                "runtimeState": "Stopped",
+                "runtimeState": "Started",
                 "pipelines": [
                     {
                         "pipelineReference": {
@@ -22,14 +22,14 @@
                     "recurrence": {
                         "frequency": "Day",
                         "interval": 1,
-                        "startTime": "2024-01-12T01:37:00",
-                        "timeZone": "India Standard Time",
+                        "startTime": "2024-01-15T11:30:00",
+                        "timeZone": "IndiaStandardTime",
                         "schedule": {
                             "minutes": [
-                                15
+                                30
                             ],
                             "hours": [
-                                10
+                                11
                             ]
                         }
                     }
