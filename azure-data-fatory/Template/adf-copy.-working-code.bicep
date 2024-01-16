@@ -192,10 +192,10 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
       recurrence: {
         frequency: 'Day'
         interval: 1
-        startTime: '2024-01-15T11:53:00'  // Adjust the start time as needed
-        timeZone: 'IndiaStandardTime'
+        startTime: '2024-01-15T11:59:00'  // Adjust the start time as needed
+        timeZone: 'India Standard Time'
         schedule: {
-          minutes: [53]
+          minutes: [59]
           hours: [11]
         }
       }
