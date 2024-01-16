@@ -30,7 +30,7 @@ jobs:
           azPSVersion: '3.0.0'
           inlineScript: |
            # Get trigger names
-            $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Started'].name" -o tsv --only-show-errors
+            names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Started'].name" -o tsv --only-show-errors
 
             # Stop each trigger
             foreach ($name in $names) {
