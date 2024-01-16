@@ -1,6 +1,6 @@
 // Define parameters for the script
 @description('Name of the pipeline for data copy activity.')
-param pipelineName string = 'ds_rais_futura'
+param pipelineName string = 'db_rais_futura'
 
 @description('User Id for the source SQL Server.')
 @secure()
@@ -27,10 +27,10 @@ param sourceSqlServer string
 param sinkSqlServer string
 
 // Define variable names for clarity
-var linkedServiceSourceName = 'ds_raissql'
-var linkedServiceSinkName = 'ds_futurasql'
-var sourceDatasetName = 'ds_raisdataset'
-var sinkDatasetName = 'ds_futuradataset'
+var linkedServiceSourceName = 'raissql'
+var linkedServiceSinkName = 'futurasql'
+var sourceDatasetName = 'raisdataset'
+var sinkDatasetName = 'futuradataset'
 var dataFactoryName = 'myappadfa'
 
 // Define variables for source server and database
@@ -115,7 +115,7 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
   properties: {
     activities: [
       {
-        name: 'cp_raistofutura'
+        name: 'raistofutura'
         type: 'Copy'
         dependsOn: []
         policy: {
@@ -173,7 +173,7 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
 }
 
 resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'daily_trigger'
+  name: 'rais_trigger'
   parent: dataFactory
   properties: {
     annotations: []
@@ -195,7 +195,7 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
         startTime: '2024-01-15T12:12:00'  // Adjust the start time as needed
         timeZone: 'India Standard Time'
         schedule: {
-          minutes: [25]
+          minutes: [43]
           hours: [15]
         }
       }

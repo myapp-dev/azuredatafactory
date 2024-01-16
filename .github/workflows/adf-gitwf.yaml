@@ -1,59 +1,46 @@
-name: githubworkflowadf
+name: data factory creation
 
 on:
-  workflow_dispatch:
-    branches:
-      - master
-
+  push:
 permissions:
-  id-token: write
-  contents: read
+    id-token: write
+    contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: dev
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3.4.1
         with:
-          node-version: 14.x
+          path: ./  # Checkout to the root directory
 
-      - name: Install ADF Utilities package
-        run: npm install
-
-      - name: Validate
-        run: npm run build validate ${{ github.workspace }} /subscriptions/6cdd51be-69f2-4db8-ace0-61086685ec5c/resourceGroups/project-dev/providers/Microsoft.DataFactory/factories/myappadf
-        working-directory: /home/runner/work/azuredatafactory/azuredatafactory/ADFroot/build
-
-      - name: Validate and Generate ARM template
-        run: npm run build export ${{ github.workspace }} /subscriptions/6cdd51be-69f2-4db8-ace0-61086685ec5c/resourceGroups/project-dev/providers/Microsoft.DataFactory/factories/myappadf "ExportedArmTemplate"
-        working-directory: /home/runner/work/azuredatafactory/azuredatafactory/ADFroot/build
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ExportedArmTemplate
-          path: /home/runner/work/azuredatafactory/azuredatafactory/ADFroot/build/ExportedArmTemplate
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v3.0.2
-        with:
-          name: ExportedArmTemplate
-
-      - name: Login via Az module
+      # Log into Azure
+      - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true
 
-      - name: Data Factory Deploy
-        uses: Azure/data-factory-deploy-action@v1.2.0
+      # Deploy ARM template
+      - name: Deploy ARM Template
+        uses: azure/arm-deploy@v1
         with:
-          resourceGroupName: project-dev
-          dataFactoryName: gitadfdev
+          scope: resourcegroup
+          region: East US
+          resourceGroupName: ${{secrets.RESOURCE_GROUP}}
+          template: azure-data-fatory/Template/adf-copy.-working-code.bicep
+          parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQL_SOURCEUSERID}} sqlsourcePassword=${{secrets.SQL_SOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQL_SINKUSERID}} sqlsinkPassword=${{secrets.SQL_SINKPASSWORD}} sourceSqlServer=${{secrets.SQL_SOURCESERVER}} sinkSqlServer=${{secrets.SQL_SINKSERVER}}
+
+      # Use Azure PowerShell
+      - name: Use Azure PowerShell
+        uses: azure/powershell@v1
+        with:
+          azPSVersion: '3.0.0'
+          inlineScript: |
+            $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Stopped'].name" -o tsv --only-show-errors
+            foreach($name in $names){
+              az datafactory trigger start --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
+            }
