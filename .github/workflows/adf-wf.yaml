@@ -1,10 +1,10 @@
 name: Azure-data-migrationsS
 
 on:
-   push:
+  push:
 permissions:
-    id-token: write
-    contents: read
+      id-token: write
+      contents: read
 
 jobs:
   build-and-deploy:
@@ -27,20 +27,12 @@ jobs:
       - name: Use Azure PowerShell
         uses: azure/powershell@v1
         with:
-         inlineScript: |
-      
+          azPSVersion: '3.0.0'
+          inlineScript: |
+            # Get trigger names
+            $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Started'].name" -o tsv --only-show-errors
 
-          # Get trigger names
-          $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Started'].name" -o tsv --only-show-errors
-
-          # Stop each trigger
-          foreach ($name in $names) {
-              az datafactory trigger stop --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
-          }
-
-
-
-
-
-
-
+            # Stop each trigger
+            foreach ($name in $names) {
+                az datafactory trigger stop --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
+            }
