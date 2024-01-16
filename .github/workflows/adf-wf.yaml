@@ -24,37 +24,23 @@ jobs:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
 
-      - name: 'ADF triggers stop --> Deployment and triggers start step'
+      - name: Use Azure PowerShell
         uses: azure/powershell@v1
         with:
-          inlineScript: |
-            $ResourceGroupName = "${{ secrets.RESOURCE_GROUP }}" 
-            $DataFactoryName = "${{secrets.DATA_FACTORY_NAME }}"
-            $Annotations = "LDS" 
-            $Triggers = Get-AzDataFactoryV2Trigger -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
-            $stoppedTriggers = $Triggers | Where-Object { $_.Properties.RuntimeState -eq "Stopped" }
-            $startedTriggers = @()
-            
-            foreach ($trigger in $Triggers) {
-             if(($Trigger.Properties.Annotations[0] -eq $Annotations) -and ($Trigger.Properties.RuntimeState -eq "Started"))
-                {
-            # Stop the Triggers that were in "Started" state
-            Stop-AzDataFactoryV2Trigger -ResourceGroupName $resourceGroupName -DataFactoryName $dataFactoryName -Name $trigger.Name -Force
-            $startedTriggers += $trigger.Name
-            Write-Host "Stopped trigger $($trigger.Name)."
-            } elseif ($trigger.Triggerstate -eq "Stopped") {
-                Write-Host "Trigger $($trigger.Name) is already in a stopped state."
-            } else {
-                Write-Host "Trigger $($trigger.Name) is in an unknown state: $($trigger.Triggerstate)."
-            }
-            }
+         inlineScript: |
+      
 
-            # Start the Triggers that were in "Started" state before stopping
-            foreach ($triggerName in $startedTriggers) {
-                Start-AzDataFactoryV2Trigger -ResourceGroupName ${{ vars.DEFAULT_PROPERTIES_RESOURCEGROUP_VALUE1 }} -DataFactoryName ${{ vars.FACTORYNAME1 }} -Name $triggerName -Force
-                Write-Host "Started trigger $triggerName."
-            }
+          # Get trigger names
+          $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Started'].name" -o tsv --only-show-errors
 
-            Write-Host "Trigger stop, Deployment and start step has been completed."
-          azPSVersion: 'LatestVersion'
-        if: success()
+          # Stop each trigger
+          foreach ($name in $names) {
+              az datafactory trigger stop --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
+          }
+
+
+
+
+
+
+
