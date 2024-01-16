@@ -1,8 +1,10 @@
+name: adf-RAIS-Data migrations
+
 on:
-  workflow_dispatch:
+  push:
 permissions:
-      id-token: write
-      contents: read
+  id-token: write
+  contents: read
 
 jobs:
   build-and-deploy:
@@ -15,32 +17,30 @@ jobs:
         with:
           path: ./  # Checkout to the root directory
 
-      # Log into Azure
+       # Log into Azure
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
-        # Optionally, add `audience` if required:
-        # audience: <your-app-registration-client-id>
 
-      - name: Verify Azure Credentials
-        run: |
-          Write-Host "Azure Credentials Secret Content:"
-          Write-Host ${{secrets.AZURE_CREDENTIALS}}
-          # Add more logging or checks as needed
-
-      - name: Azure PowerShell Action
-        uses: Azure/powershell@v1
+      # Deploy ARM template
+      - name: Deploy ARM Template
+        uses: azure/arm-deploy@v1
         with:
-          pwsh: true  # Use PowerShell core
+          scope: resourcegroup
+          region: East US
+          resourceGroupName: ${{secrets.RESOURCE_GROUP}}
+          template: azure-data-fatory/Template/adf-copy.-working-code.bicep
+          parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQLSOURCEUSERID}} sqlsourcePassword=${{secrets.SQLSOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQLSINKUSERID}} sqlsinkPassword=${{secrets.SQLSINKPASSWORD}} sourceSqlServer=${{secrets.SOURCESQLSERVER}} sinkSqlServer=${{secrets.SINKSQLSERVER}} 
+
+      # Use Azure PowerShell
+      - name: Use Azure PowerShell
+        uses: azure/powershell@v1
+        with:
+          azPSVersion: 'latest'
           inlineScript: |
-            # Ensure script path and permissions are correct
-            if (Test-Path -Path ./deployFA.ps1) {
-              Write-Host "Script found. Executing..."
-              ./deployFA.ps1 -FunctionName ${{ env.FUNCTION_NAME }} -FunctionResourceGroup ${{ env.RESOURCE_GROUP }} -Location ${{ env.LOCATION }}
-            } else {
-              Write-Host "Script not found at specified path."
-              # Handle error or provide instructions to locate the script
+            $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Stopped'].name" -o tsv --only-show-errors
+            foreach($name in $names){
+              az datafactory trigger start --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
             }
-          azPSVersion: latest
