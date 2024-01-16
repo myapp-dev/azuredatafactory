@@ -195,8 +195,8 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
         startTime: '2024-01-15T12:12:00'  // Adjust the start time as needed
         timeZone: 'India Standard Time'
         schedule: {
-          minutes: [15]
-          hours: [20]
+          minutes: [25]
+          hours: [15]
         }
       }
     }
