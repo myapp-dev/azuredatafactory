@@ -196,7 +196,7 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
         timeZone: 'India Standard Time'
         schedule: {
           minutes: [15]
-          hours: [12]
+          hours: [20]
         }
       }
     }
