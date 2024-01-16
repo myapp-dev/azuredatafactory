@@ -1,7 +1,7 @@
 name: Azure-data-migrationsS
 
 on:
-   workflow_dispatch:
+   push:
 permissions:
     id-token: write
     contents: read
@@ -24,28 +24,42 @@ jobs:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true
 
-      - name: Run PowerShell script
-        id: deploy
-        run: |
-          $ErrorActionPreference = "Stop"
+      - name: 'ADF triggers stop --> Deployment and triggers start step'
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            $ResourceGroupName = "${{ secrets.RESOURCE_GROUP }}" 
+            $DataFactoryName = "${{secrets.DATA_FACTORY_NAME }}"
+            $Annotations = "LDS" 
+            $Triggers = Get-AzDataFactoryV2Trigger -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
+            $stoppedTriggers = $Triggers | Where-Object { $_.Properties.RuntimeState -eq "Stopped" }
+            $startedTriggers = @()
+            
+            foreach ($trigger in $Triggers) {
+             if(($Trigger.Properties.Annotations[0] -eq $Annotations) -and ($Trigger.Properties.RuntimeState -eq "Started"))
+                {
+            # Stop the Triggers that were in "Started" state
+            Stop-AzDataFactoryV2Trigger -ResourceGroupName $resourceGroupName -DataFactoryName $dataFactoryName -Name $trigger.Name -Force
+            $startedTriggers += $trigger.Name
+            Write-Host "Stopped trigger $($trigger.Name)."
+            } elseif ($trigger.Triggerstate -eq "Stopped") {
+                Write-Host "Trigger $($trigger.Name) is already in a stopped state."
+            } else {
+                Write-Host "Trigger $($trigger.Name) is in an unknown state: $($trigger.Triggerstate)."
+            }
+            }
 
-          # Define parameters
-          $DataFactoryName = ${{ secrets.DATA_FACTORY_NAME }}
-          $DataFactoryResourceGroup = ${{ secrets.DATA_FACTORY_RESOURCE_GROUP }}
-          $DataFactorySubscriptionId = ${{ secrets.DATA_FACTORY_SUBSCRIPTION_ID }}
-          $DisableAllTriggers = ${{ secrets.DISABLE_ALL_TRIGGERS }}
-          $EnabledTriggers = ${"daily_trigger"}
+            $password = ConvertTo-SecureString "${{ secrets.SPN_CERT_PASSWORD }}" -asplaintext -force
+            Connect-AzAccount -ApplicationId "${{ secrets.SPN_CLIENT_ID }}" -Tenant "${{ secrets.SPN_TENANT_ID }}"  -CertificatePath '/home/runner/work/_temp/spn.pfx' -CertificatePassword $password 
+            Set-AzContext -Subscription "${{ secrets.SPN_SUBSCRIPTION_ID }}"
+            New-AzResourceGroupDeployment -ResourceGroupName ${{ vars.DEFAULT_PROPERTIES_RESOURCEGROUP_VALUE1 }} -TemplateFile "/home/runner/work/GithubRepostore/GithubRepostore/drop/ARMTemplateForFactory.json" -TemplateParameterFile "/home/runner/work/GithubRepostore/GithubRepostore/drop/ARMTemplateParametersForFactory.json"
 
-          # Add other required secrets here...
+            # Start the Triggers that were in "Started" state before stopping
+            foreach ($triggerName in $startedTriggers) {
+                Start-AzDataFactoryV2Trigger -ResourceGroupName ${{ vars.DEFAULT_PROPERTIES_RESOURCEGROUP_VALUE1 }} -DataFactoryName ${{ vars.FACTORYNAME1 }} -Name $triggerName -Force
+                Write-Host "Started trigger $triggerName."
+            }
 
-          # Rest of the PowerShell script (assuming the script is in the root directory)
-          .\your_script.ps1 -DataFactoryName $DataFactoryName `
-                             -DataFactoryResourceGroup $DataFactoryResourceGroup `
-                             -DataFactorySubscriptionId $DataFactorySubscriptionId `
-                             -DisableAllTriggers $DisableAllTriggers `
-                             -EnabledTriggers $EnabledTriggers
-
-      - name: Display script output
-        run: |
-          echo "${{ steps.deploy.outputs.stdout }}"
-          echo "${{ steps.deploy.outputs.stderr }}"
+            Write-Host "Trigger stop, Deployment and start step has been completed."
+          azPSVersion: 'LatestVersion'
+        if: success()
