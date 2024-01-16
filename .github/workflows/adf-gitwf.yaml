@@ -1,4 +1,4 @@
-name: data factory creation
+name: data factory creations
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
       - name: Use Azure PowerShell
         uses: azure/powershell@v1
         with:
-          azPSVersion: '3.0.0'
+          azPSVersion: 'latest'
           inlineScript: |
             $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Stopped'].name" -o tsv --only-show-errors
             foreach($name in $names){
