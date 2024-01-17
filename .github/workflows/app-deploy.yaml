@@ -5,7 +5,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: myapp-angular
-  AZURE_WEBAPP_PACKAGE_PATH: myapp-angular/dist/myapp
+  AZURE_WEBAPP_PACKAGE_PATH: webapp/myapp/dist/myapp
   NODE_VERSION: '20.x'  
 
 permissions:
