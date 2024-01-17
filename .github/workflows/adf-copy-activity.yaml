@@ -31,8 +31,8 @@ jobs:
           scope: resourcegroup
           region: East US
           resourceGroupName: ${{secrets.RESOURCE_GROUP}}
-          template: azure-data-fatory/Template/adf-copy.-working-code.bicep
-          parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQLSOURCEUSERID}} sqlsourcePassword=${{secrets.SQLSOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQLSINKUSERID}} sqlsinkPassword=${{secrets.SQLSINKPASSWORD}} sourceSqlServer=${{secrets.SOURCESQLSERVER}} sinkSqlServer=${{secrets.SINKSQLSERVER}} 
+          #template: azure-data-fatory/Template/adf-copy.-working-code.bicep
+          #parameters: ${{secrets.parametersFile}} sqlsourceUserId=${{secrets.SQLSOURCEUSERID}} sqlsourcePassword=${{secrets.SQLSOURCEPASSWORD}} sqlsinkUserId=${{secrets.SQLSINKUSERID}} sqlsinkPassword=${{secrets.SQLSINKPASSWORD}} sourceSqlServer=${{secrets.SOURCESQLSERVER}} sinkSqlServer=${{secrets.SINKSQLSERVER}} 
 
       # Use Azure PowerShell
       - name: Use Azure PowerShell
@@ -40,7 +40,7 @@ jobs:
         with:
           azPSVersion: 'latest'
           inlineScript: |
-            $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Stopped'].name" -o tsv --only-show-errors
+            $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Started'].name" -o tsv --only-show-errors
             foreach($name in $names){
               az datafactory trigger start --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
             }
