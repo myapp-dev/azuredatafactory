@@ -42,5 +42,5 @@ jobs:
           inlineScript: |
             $names = az datafactory trigger list --factory-name "myappadfa" --resource-group "project-dev" --query "[?properties.runtimeState=='Started'].name" -o tsv --only-show-errors
             foreach($name in $names){
-              az datafactory trigger start --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
+              az datafactory trigger stop --factory-name "myappadfa" --resource-group "project-dev" --name $name --only-show-errors
             }
