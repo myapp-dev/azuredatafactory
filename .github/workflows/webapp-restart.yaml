@@ -1,0 +1,43 @@
+name: adf-RAIS-Data migrations
+
+on:
+  push:
+    # This workflow is triggered manually through the GitHub Actions UI.
+
+permissions:
+  id-token: write
+  contents: read
+  # Permissions configuration, indicating the permissions required for this workflow.
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    # Specifies that this job will run on a Windows environment.
+
+    environment:
+      name: dev
+      # Specifies the environment name as 'dev'.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./
+          # Checks out the code repository to the root directory.
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true
+          # Logs into Azure using the specified credentials stored in GitHub Secrets.
+          
+      - name: Use Azure PowerShell
+        uses: azure/powershell@v1
+        with:
+          azPSVersion: 'latest'
+          inlineScript: |
+            az appservice web restart --resource-group project-dev --name myapp-angular
+          # Uses Azure PowerShell to restart an Azure App Service. 
+          # You'll need to replace 'xxx' with the actual values for resource group and app service name.
+
