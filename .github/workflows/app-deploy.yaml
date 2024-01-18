@@ -1,4 +1,4 @@
-name: Azure Webapp deployment
+name: Azure Webapp deployment-dev
 
 on:
   workflow_dispatch:
