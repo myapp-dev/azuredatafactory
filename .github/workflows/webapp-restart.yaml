@@ -1,7 +1,7 @@
 name: webapp restart 
 
 on:
-  push:
+  workflow_dispatch:
     # This workflow is triggered manually through the GitHub Actions UI.
 
 permissions:
