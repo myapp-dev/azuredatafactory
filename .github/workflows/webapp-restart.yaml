@@ -1,4 +1,4 @@
-name: adf-RAIS-Data migrations
+name: webapp restart 
 
 on:
   push:
