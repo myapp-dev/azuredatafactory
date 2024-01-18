@@ -1,7 +1,7 @@
 name: Azure Webapp deployment
 
 on:
-  push:
+  workflow_dispatch:
 
 env:
   AZURE_WEBAPP_NAME: myapp-angular
