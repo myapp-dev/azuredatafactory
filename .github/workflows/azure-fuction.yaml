@@ -4,9 +4,7 @@ name: Build and deploy Java project to Azure Function App - myappfunction123
 
 on:
   push:
-    branches:
-      - dev
-  workflow_dispatch:
+   
 
 env:
   AZURE_FUNCTIONAPP_NAME: myappfunction123 # set this to your function app name on Azure
