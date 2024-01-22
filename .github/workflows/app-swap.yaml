@@ -1,4 +1,4 @@
-name: Azure-data-migrationsS
+name: Azur restart
 
 on:
   push:
@@ -30,4 +30,4 @@ jobs:
           azPSVersion: '3.0.0'
           inlineScript: |
             #az webapp deployment slot swap --resource-group project-dev --name myapp-angular --slot dev --target-slot production
-            az appservice web restart --resource-group project-dev --name myapp-angular
+            az webapp --name myapp-angular restart
