@@ -1,4 +1,4 @@
-name: Azur restart
+name: Azur restart webapp 
 
 on:
   push:
