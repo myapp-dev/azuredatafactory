@@ -34,10 +34,12 @@ jobs:
           mvn clean package
           popd
 
-      - name: Azure Login
+      - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: ${{secrets.AZURE_CREDENTIALS}}
+          client-id: ${{ secrets.__clientidsecretname__ }}
+          tenant-id: ${{ secrets.__tenantidsecretname__ }}
+          subscription-id: ${{ secrets.__subscriptionidsecretname__ }}
           
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
