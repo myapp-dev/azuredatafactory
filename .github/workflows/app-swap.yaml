@@ -30,4 +30,4 @@ jobs:
           azPSVersion: '3.0.0'
           inlineScript: |
             #az webapp deployment slot swap --resource-group project-dev --name myapp-angular --slot dev --target-slot production
-            az appservice web restart --resource-group project-dev --name dev
+            az appservice web restart --resource-group project-dev --name myapp-angular
