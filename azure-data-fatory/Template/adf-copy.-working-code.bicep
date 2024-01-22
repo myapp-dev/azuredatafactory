@@ -173,7 +173,7 @@ resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
 }
 
 resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@2018-06-01' = {
-  name: 'rais_trigger'
+  name: 'futura_trigger'
   parent: dataFactory
   properties: {
     annotations: []
@@ -195,7 +195,7 @@ resource dataFactoryPipelineTrigger 'Microsoft.DataFactory/factories/triggers@20
         startTime: '2024-01-15T12:12:00'  // Adjust the start time as needed
         timeZone: 'India Standard Time'
         schedule: {
-          minutes: [40]
+          minutes: [48]
           hours: [14]
         }
       }
