@@ -1,7 +1,7 @@
-name: function app deploy
-
+name: Build and deploy Java project 
 on:
   push:
+    
    
 
 env:
@@ -33,7 +33,11 @@ jobs:
           pushd './${{ env.PACKAGE_DIRECTORY }}'
           mvn clean package
           popd
-      
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
           
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
