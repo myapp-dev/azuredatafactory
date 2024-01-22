@@ -1,43 +1,46 @@
-name: webapp restart 
+name: function app deploy
 
 on:
-  workflow_dispatch:
-    # This workflow is triggered manually through the GitHub Actions UI.
+  push:
+   
+
+env:
+  AZURE_FUNCTIONAPP_NAME: myappfunction123 # set this to your function app name on Azure
+  PACKAGE_DIRECTORY: 'ADFroot' # set this to the directory which contains pom.xml file
+  JAVA_VERSION: '17' # set this to the java version to use
 
 permissions:
-  id-token: write
-  contents: read
-  # Permissions configuration, indicating the permissions required for this workflow.
-
+    id-token: write
+    contents: read
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-    # Specifies that this job will run on a Windows environment.
-
-    environment:
-      name: dev
-      # Specifies the environment name as 'dev'.
+    permissions:
+      id-token: write #This is required for requesting the JWT
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: ./
-          # Checks out the code repository to the root directory.
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
 
-      - name: Azure Login
-        uses: azure/login@v1
+      - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v1
         with:
-          creds: ${{secrets.AZURE_CREDENTIALS}}
-          enable-AzPSSession: true
-          # Logs into Azure using the specified credentials stored in GitHub Secrets.
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 'Restore Project Dependencies Using Mvn'
+        shell: pwsh
+        run: |
+          pushd './${{ env.PACKAGE_DIRECTORY }}'
+          mvn clean package
+          popd
+      
           
-      - name: Use Azure PowerShell
-        uses: azure/powershell@v1
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1
+        id: fa
         with:
-          azPSVersion: 'latest'
-          inlineScript: |
-            az appservice web restart --resource-group project-dev --name myapp-angular
-          # Uses Azure PowerShell to restart an Azure App Service. 
-          # You'll need to replace 'xxx' with the actual values for resource group and app service name.
+          app-name: 'myappfunction123'
+          slot-name: 'production'
+          package: '${{ env.PACKAGE_DIRECTORY }}'
+          respect-pom-xml: true
 

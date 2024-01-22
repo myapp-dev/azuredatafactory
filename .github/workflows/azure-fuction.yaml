@@ -3,7 +3,8 @@
 name: Build and deploy Java project to Azure Function App - myappfunction123
 
 on:
-  push:
+  workflow_dispatch:
+    
    
 
 env:
