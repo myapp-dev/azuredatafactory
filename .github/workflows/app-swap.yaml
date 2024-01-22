@@ -30,5 +30,4 @@ jobs:
           azPSVersion: '3.0.0'
           inlineScript: |
             #az webapp deployment slot swap --resource-group project-dev --name myapp-angular --slot dev --target-slot production
-            #az webapp --name myapp-angular restart
-            Stop-AzWebAppSlot -ResourceGroupName "project-dev" -Name "ContosoWebApp" -Slot "dev"
+            az webapp webjob continuous stop --name myapp-angular --resource-group t-dev --webjob-name MyWebjob
