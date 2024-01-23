@@ -55,7 +55,6 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-          allow-no-subscriptions: true
         env:
           AZURE_AD_DEBUG_LOG: 1
           AZURE_CORE_LOG: 1
