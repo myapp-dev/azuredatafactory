@@ -8,7 +8,7 @@ permissions:
 
 env:
   AZURE_WEBAPP_NAME: "myapp-java-app"
-  AZURE_WEBAPP_PACKAGE_PATH: "bh-dev-rest"
+  AZURE_WEBAPP_PACKAGE_PATH: "  azuredatafactory/bh-dev-rest"
   JAVA_VERSION: '17'
   AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 
