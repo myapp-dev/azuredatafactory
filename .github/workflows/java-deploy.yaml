@@ -1,4 +1,4 @@
-name: Bh-javaapp-backend
+name: Bh-javaapp-backend-dev
 
 on:
   push:
