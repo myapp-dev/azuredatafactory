@@ -1,9 +1,7 @@
 name: Build and deploy Java project  developemt
 on:
-  push:
+  workflow_dispatch:
     
-   
-
 env:
   AZURE_FUNCTIONAPP_NAME: myappfunction123 # set this to your function app name on Azure
   PACKAGE_DIRECTORY: 'ADFroot' # set this to the directory which contains pom.xml file
