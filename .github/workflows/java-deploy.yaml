@@ -1,64 +1,57 @@
-name: Bh-javaapp-backend-dev
+
+
+name:  JAR app to Azure Web App
 
 on:
   push:
-permissions:
-      id-token: write
-      contents: read
 
 env:
-  AZURE_WEBAPP_NAME: "myapp-java-app"
-  AZURE_WEBAPP_PACKAGE_PATH: "  azuredatafactory/bh-dev-rest"
-  JAVA_VERSION: '17'
-  AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+  AZURE_WEBAPP_NAME: myapp-java-app   # set this to your application's name
+  JAVA_VERSION: '17'                  # set this to the Java version to use
+permissions:
+    id-token: write
+    contents: read
+
+    
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Java version
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'adopt'
+          java-version: ${{ env.JAVA_VERSION }}
           cache: 'maven'
-          java-package: 'jdk'
-          check-latest: false
-          server-id: 'github'
-          server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GITHUB_TOKEN }}
-          overwrite-settings: true
-          job-status: 'success'
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build with Maven
         run: mvn clean install
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/target/*.jar'
+          path: 'bh-dev-rest/target*.jar'
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'production'
+      name: 'dev'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: java-app
 
@@ -69,3 +62,4 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: production
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: '*.jar'
