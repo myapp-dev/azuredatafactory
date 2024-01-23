@@ -30,6 +30,8 @@ jobs:
         run: |
           pwd
           ls -la
+          echo "Java Version: $(java -version)"
+          echo "Maven Version: $(mvn -version)"
 
       - name: Build with Maven
         run: mvn clean install
@@ -53,7 +55,12 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
-        
+          allow-no-subscriptions: true
+        env:
+          AZURE_AD_DEBUG_LOG: 1
+          AZURE_CORE_LOG: 1
+      - run: az account show
+      - run: az configure --list
           
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
