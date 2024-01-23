@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: myapp-java-app   # set this to your application's name
+  AZURE_WEBAPP_NAME: myapp-java121  # set this to your application's name
   JAVA_VERSION: '17'                  # set this to the Java version to use
 
 permissions:
@@ -54,7 +54,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{secrets.AZURE_CREDENTIALS}}
+          creds: ${{secrets.AZURE_CREDENTIALS1}}
         env:
           AZURE_AD_DEBUG_LOG: 1
           AZURE_CORE_LOG: 1
