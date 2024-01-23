@@ -1,0 +1,76 @@
+name: JAR app to Azure Web App
+
+on:
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: myapp-java121  # set this to your application's name
+  JAVA_VERSION: '17'                  # set this to the Java version to use
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK and Maven
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          maven-version: '3.2.2' # Specify the version of Maven you want to use
+
+      - name: Debug Information
+        run: |
+          pwd
+          ls -la
+          echo "Java Version: $(java -version)"
+          echo "Maven Version: $(mvn -version)"
+
+      - name: Build with Maven
+        run: mvn clean install
+        working-directory: bh-dev-rest  # Update with the actual path to your Maven project
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-app
+          path: 'bh-dev-rest/target/*.jar'
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'dev'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS1}}
+        env:
+          AZURE_AD_DEBUG_LOG: 1
+          AZURE_CORE_LOG: 1
+      - run: az account show
+      - run: az configure --list
+          
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: java-app
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: production
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: '*.jar'

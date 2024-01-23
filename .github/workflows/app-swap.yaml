@@ -1,0 +1,33 @@
+name: Azur restart webapp 
+
+on:
+  workflow_dispatch:
+permissions:
+      id-token: write
+      contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./  # Checkout to the root directory
+
+      # Log into Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true
+
+      - name: Use Azure PowerShell
+        uses: azure/powershell@v1
+        with:
+          azPSVersion: '3.0.0'
+          inlineScript: |
+            #az webapp deployment slot swap --resource-group project-dev --name myapp-angular --slot dev --target-slot production
+            az webapp webjob continuous stop --name myapp-angular --resource-group t-dev --webjob-name MyWebjob
