@@ -19,14 +19,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 1.8
+      - name: Set up JDK and Maven
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
+          maven-version: '3.2.2' # Specify the version of Maven you want to use
+
+      - name: Debug Information
+        run: |
+          pwd
+          ls -la
 
       - name: Build with Maven
         run: mvn clean install
+        working-directory: bh-dev-rest  # Update with the actual path to your Maven project
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
