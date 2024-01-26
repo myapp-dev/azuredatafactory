@@ -1,7 +1,7 @@
 name: data factory creations
 
 on:
-  workflow_dispatch:
+  push:
 permissions:
     id-token: write
     contents: read
@@ -21,7 +21,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{secrets.AZURE_CREDENTIALS}}
+          creds: ${{secrets.AZURE_CREDENTIALS12}}
           enable-AzPSSession: true
 
       # Deploy ARM template
